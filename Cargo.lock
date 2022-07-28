@@ -1245,6 +1245,7 @@ dependencies = [
 name = "solana-ubi"
 version = "0.1.0"
 dependencies = [
+ "anchor-derive-accounts",
  "anchor-lang",
  "anchor-spl",
 ]

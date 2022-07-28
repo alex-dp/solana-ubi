@@ -1,31 +1,37 @@
 use anchor_lang::prelude::*;
 use anchor_spl::token;
-use anchor_spl::token::{Token, MintTo};
+use anchor_spl::token::{Token, MintTo, TokenAccount, Mint};
+use anchor_spl::associated_token::AssociatedToken;
 
 declare_id!("EcFTDXxknt3vRBi1pVZYN7SjZLcbHjJRAmCmjZ7Js3fd");
-//token HKTPz1skkSNAC8TXJiYvPyYtMCQDHtAheCL4FrBArCDJ
-//program EcFTDXxknt3vRBi1pVZYN7SjZLcbHjJRAmCmjZ7Js3fd
-//account GHQMHrt4j8i6bBaVhpMCLP8uoFfWUrLZsQtWCWqSJKA6
+
+const MINTER:&str = "minter";
+
+//token F6uEadxH923XCSX9q3zMTLBtofmUDCmoez6Bq9DrnuFj
+//account DvKqa8hcR6HgSG6cZnmgm5FeksemJ6kmFGoPWouNsdro
+//pda Bd4vag5JXn2RrGFw8VySP93QYouw5J8D3f1KCy3iUXRN
+
 #[program]
-pub mod solana_ubi {
+pub mod token_mint_pda {
     use super::*;
 
-    pub fn mint_token(ctx: Context<MintToken>,) -> Result<()> {
-        // Create the MintTo struct for our context
-        let cpi_accounts = MintTo {
-            mint: ctx.accounts.mint.to_account_info(),
-            to: ctx.accounts.token_account.to_account_info(),
-            authority: ctx.accounts.owner.to_account_info(),
-        };
-
-        //need to make pda. see cookbook: sign a transaction with a pda.
-
-        let cpi_program = ctx.accounts.token_program.to_account_info();
-        // Create the CpiContext we need for the request
-        let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
-
-        // Execute anchor's helper function to mint tokens
-        token::mint_to(cpi_ctx, 10_000_000_000)?;
+    pub fn mint_token(ctx: Context<MintToken>) -> Result<()> {
+        let bump: u8 = 255;
+        token::mint_to(
+            CpiContext::new_with_signer(
+                ctx.accounts.token_program.to_account_info(),
+                MintTo {
+                    mint: ctx.accounts.mint.to_account_info(),
+                    to: ctx.accounts.destination.to_account_info(),
+                    authority: ctx.accounts.mint.to_account_info(),
+                },
+                &[&[
+                    MINTER.as_bytes(),
+                    &[bump]
+                ]],
+            ),
+            10_000_000_000,
+        )?;
 
         Ok(())
     }
@@ -33,14 +39,28 @@ pub mod solana_ubi {
 
 #[derive(Accounts)]
 pub struct MintToken<'info> {
-    /// CHECK: This is the token that we want to mint
-    #[account()]
-    pub mint: UncheckedAccount<'info>,
-    pub token_program: Program<'info, Token>,
-    /// CHECK: This is the token account that we want to mint tokens to
+    #[account(
+    init_if_needed,
+    payer = payer,
+    seeds = [MINTER.as_ref()],
+    bump,
+    mint::decimals = 0,
+    mint::authority = mint
+    )]
+    pub mint: Account<'info, Mint>,
+
     #[account(mut)]
-    pub token_account: UncheckedAccount<'info>,
-    /// CHECK: ugh
-    #[account(signer)]
-    pub owner: AccountInfo<'info>,
+    pub payer: Signer<'info>,
+
+    #[account(init_if_needed,
+    payer = payer,
+    associated_token::mint = mint,
+    associated_token::authority = payer
+    )]
+    pub destination: Account<'info, TokenAccount>,
+
+    pub system_program: Program<'info, System>,
+    pub token_program: Program<'info, Token>,
+    pub associated_token_program: Program<'info, AssociatedToken>,
+    pub rent: Sysvar<'info, Rent>
 }
