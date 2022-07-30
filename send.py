@@ -3,9 +3,7 @@ from solana.publickey import PublicKey
 from solana.transaction import AccountMeta
 from solana.rpc.api import Client
 from solana.transaction import Transaction, TransactionInstruction
-from spl.token.constants import TOKEN_PROGRAM_ID, ASSOCIATED_TOKEN_PROGRAM_ID
-from solana.system_program import SYS_PROGRAM_ID
-from solana.sysvar import SYSVAR_RENT_PUBKEY
+from spl.token.constants import TOKEN_PROGRAM_ID
 
 client = Client("http://localhost:8899")
 
@@ -15,21 +13,16 @@ print(sender.public_key)
 
 txn = Transaction().add(
 	TransactionInstruction([
-		# accounts
+		# pda
+		AccountMeta(PublicKey("Bd4vag5JXn2RrGFw8VySP93QYouw5J8D3f1KCy3iUXRN"), False, False),
 		# mint
-		AccountMeta(PublicKey("F6uEadxH923XCSX9q3zMTLBtofmUDCmoez6Bq9DrnuFj"), False, True),
-		# payer
-		AccountMeta(sender.public_key, True, True),
+		AccountMeta(PublicKey("4jzEiVCdX5DbcadqChrrvWaYJT7YHGy3cnH4peN3fc54"), False, True),
+		# user
+		AccountMeta(sender.public_key, True, False),
 		# token acc
-		AccountMeta(PublicKey("DvKqa8hcR6HgSG6cZnmgm5FeksemJ6kmFGoPWouNsdro"), False, True),
-		# system
-		AccountMeta(SYS_PROGRAM_ID, False, False),
-		# token
+		AccountMeta(PublicKey("HfNY5k4T4xQVeYASUvDZE12MRyCj4hqGNJ6yuZGPshAx"), False, True),
+		# token prog
 		AccountMeta(TOKEN_PROGRAM_ID, False, False),
-		# ass tok prog
-		AccountMeta(ASSOCIATED_TOKEN_PROGRAM_ID, False, False),
-		# rent
-		AccountMeta(SYSVAR_RENT_PUBKEY, False, False),
 		],
 	# program address
 	PublicKey("EcFTDXxknt3vRBi1pVZYN7SjZLcbHjJRAmCmjZ7Js3fd"),
