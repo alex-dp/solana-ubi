@@ -142,5 +142,5 @@ pub struct UBIInfo {
 
 impl UBIInfo {
     // in bytes
-    pub const MAX_SIZE: usize = 32 + 8 + 8 + (4 + 32 * TRUST_COEFF as usize) + 1 + 1;
+    pub const MAX_SIZE: usize = 32 + 8 + 8 + (4 + 32 * TRUST_COEFF as usize) + 1;
 }
