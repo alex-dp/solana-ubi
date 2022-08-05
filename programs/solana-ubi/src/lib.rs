@@ -46,15 +46,16 @@ pub mod ido_pool {
         }.expect("")
     }
 
-    // TODO user can't trust themselves
     pub fn trust(ctx: Context<TrustUser>) -> Result<u8> {
         let now_ts: UnixTimestamp = Clock::get().unwrap().unix_timestamp;
-        if ctx.accounts.trustee_ubi_info.trusted {
+        if ctx.accounts.truster_authority.key.as_ref() == ctx.accounts.trustee_ubi_info.authority.as_ref() {
             Err(0)
-        } else if ctx.accounts.trustee_ubi_info.trusters.contains(ctx.accounts.truster_authority.key) {
+        } else if ctx.accounts.trustee_ubi_info.trusted {
             Err(1)
-        } else if now_ts < ctx.accounts.truster_ubi_info.last_trust_given + 24 * 60 * 60 {
+        } else if ctx.accounts.trustee_ubi_info.trusters.contains(ctx.accounts.truster_authority.key) {
             Err(2)
+        } else if now_ts < ctx.accounts.truster_ubi_info.last_trust_given + 24 * 60 * 60 {
+            Err(3)
         } else {
             ctx.accounts.trustee_ubi_info.trusters.push(*ctx.accounts.truster_authority.key);
 
@@ -70,11 +71,12 @@ pub mod ido_pool {
         let now_ts: UnixTimestamp = Clock::get().unwrap().unix_timestamp;
         let acc = &mut ctx.accounts.ubi_info;
 
+        acc.authority = *ctx.accounts.user_authority.key;
         acc.trusters = Vec::new();
         acc.last_trust_given = now_ts - 24 * 60 * 60;
         acc.trusted = true; //TODO change to false for production
         acc.last_issuance = now_ts;
-        acc.bump = 255; //TODO check this
+        //acc.bump = 255; //TODO check this
 
         Ok(0)
     }
@@ -92,8 +94,8 @@ pub struct MintUBI<'info> {
     pub user_authority: AccountInfo<'info>,
     #[account(mut)]
     pub user_redeemable: Account<'info, TokenAccount>,
-    // is program account. TODO SET SEEDS!
-    #[account(mut, seeds = ["ubi_info".as_bytes()], bump)]
+    // is program account. NOTE been initialized
+    #[account(mut)]
     pub ubi_info: Account<'info, UBIInfo>,
     /// CHECK: x
     #[account(constraint = token_program.key == & token::ID)]
@@ -115,7 +117,7 @@ pub struct TrustUser<'info> {
 
 #[derive(Accounts)]
 pub struct Initialize<'info> {
-    #[account(init, payer = user_authority, space = 8 + UBIInfo::MAX_SIZE, seeds = ["ubi_info".as_bytes()], bump)]
+    #[account(init, payer = user_authority, space = 8 + UBIInfo::MAX_SIZE, seeds = ["ubi_info".as_bytes(), user_authority.key.as_ref()], bump)]
     pub ubi_info: Account<'info, UBIInfo>,
     /// CHECK: x
     #[account(signer, mut)]
@@ -126,6 +128,8 @@ pub struct Initialize<'info> {
 
 #[account]
 pub struct UBIInfo {
+    // [u8; 32]
+    authority: Pubkey,
     // i64
     last_issuance: UnixTimestamp,
     // i64
@@ -133,10 +137,10 @@ pub struct UBIInfo {
     // [u8; 32] * TRUST_COEFF
     trusters: Vec<Pubkey>,
     trusted: bool,
-    bump: u8,
+    //bump: u8,
 }
 
 impl UBIInfo {
     // in bytes
-    pub const MAX_SIZE: usize = 8 + 8 + (4 + 32 * TRUST_COEFF as usize) + 1 + 1;
+    pub const MAX_SIZE: usize = 32 + 8 + 8 + (4 + 32 * TRUST_COEFF as usize) + 1 + 1;
 }
