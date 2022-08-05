@@ -87,7 +87,7 @@ pub struct MintUBI<'info> {
     /// CHECK: x
     #[account(seeds = [MINTER.as_bytes()], bump)]
     mint_signer: AccountInfo<'info>,
-    #[account(mut, constraint = redeemable_mint.mint_authority == COption::Some(* pool_signer.key))]
+    #[account(mut, constraint = ubi_mint.mint_authority == COption::Some(* mint_signer.key))]
     pub ubi_mint: Account<'info, Mint>,
     /// CHECK: x
     #[account(signer, mut)]
