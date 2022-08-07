@@ -34,7 +34,7 @@ txn = Transaction().add(
 		AccountMeta(TOKEN_PROGRAM_ID, False, False),
 		# system prog
 		AccountMeta(SYS_PROGRAM_ID, False, False),
-		],
+	],
 	# program address
 	prog_id,
 	# data
