@@ -57,4 +57,8 @@ describe("solana-ubi", () => {
       }).signers([auth]).rpc();
     console.log("Your transaction signature", tx);
   });
+  
+  it("Is deserialized!", async () => {
+  	
+  });
 });
