@@ -59,6 +59,7 @@ describe("solana-ubi", () => {
   });
   
   it("Is deserialized!", async () => {
-  	
+  	let a = await anchor.getProvider().connection.getParsedAccountInfo(pda[0])
+    console.log(a.value.data)
   });
 });

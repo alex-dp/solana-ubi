@@ -21,11 +21,10 @@ pub mod solana_ubi {
         ctx: Context<MintUBI>
     ) -> Result<u8> {
         let now_ts = Clock::get().unwrap().unix_timestamp;
-        if !ctx.accounts.ubi_info.trusted {
-            Err(0)
-        } else if now_ts < ctx.accounts.ubi_info.last_issuance + 23 * 60 * 60 {
-            Err(1)
-        } else {
+        //TODO urgent fix this. and other time checks. can it go in the constraints?
+        // if now_ts < ctx.accounts.ubi_info.last_issuance + 23 * 60 * 60 {
+        //     Err(1)
+        // } else {
             // approx rate of 10 tok per day (9 decimal places)
             let amount: u64 = (115_740 * (now_ts - ctx.accounts.ubi_info.last_issuance)) as u64;
             // Mint Redeemable to user Redeemable account.
@@ -43,25 +42,19 @@ pub mod solana_ubi {
             let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts, signer);
             token::mint_to(cpi_ctx, amount)?;
             ctx.accounts.ubi_info.last_issuance = now_ts;
-            Ok(Ok(0))
-        }.expect("")
+            Ok(0) //Ok(Ok(0))
+        // }.expect("")
     }
 
     pub fn trust(ctx: Context<TrustUser>) -> Result<u8> {
         let now_ts: i64 = Clock::get().unwrap().unix_timestamp;
-        if ctx.accounts.truster_authority.key.as_ref() == ctx.accounts.trustee_ubi_info.authority.as_ref() {
-            Err(0)
-        } else if ctx.accounts.trustee_ubi_info.trusted {
-            Err(1)
-        } else if ctx.accounts.trustee_ubi_info.trusters.contains(ctx.accounts.truster_authority.key) {
-            Err(2)
-        } else if now_ts < ctx.accounts.truster_ubi_info.last_trust_given + 24 * 60 * 60 {
+        if now_ts < ctx.accounts.truster_ubi_info.last_trust_given + 24 * 60 * 60 {
             Err(3)
         } else {
             ctx.accounts.trustee_ubi_info.trusters.push(*ctx.accounts.truster_authority.key);
 
             if ctx.accounts.trustee_ubi_info.trusters.len() >= TRUST_COEFF as usize {
-                ctx.accounts.trustee_ubi_info.trusted = true;
+                ctx.accounts.trustee_ubi_info.is_trusted = true;
             }
             ctx.accounts.truster_ubi_info.last_trust_given = now_ts;
             Ok(Ok(0))
@@ -75,7 +68,7 @@ pub mod solana_ubi {
         acc.authority = *ctx.accounts.user_authority.key;
         acc.trusters = Vec::new();
         acc.last_trust_given = now_ts - 24 * 60 * 60;
-        acc.trusted = !PRODUCTION;
+        acc.is_trusted = !PRODUCTION;
         acc.last_issuance = now_ts - 24 * 60 * 60;
 
         Ok(0)
@@ -117,12 +110,19 @@ pub struct MintUBI<'info> {
 
 #[derive(Accounts)]
 pub struct TrustUser<'info> {
-    #[account(mut)]
+    #[account(
+        mut,
+        constraint = trustee_ubi_info.is_trusted
+    )]
     pub trustee_ubi_info: Account<'info, UBIInfo>,
     #[account(mut, constraint = truster_ubi_info.authority == *truster_authority.key)]
     pub truster_ubi_info: Account<'info, UBIInfo>,
     /// CHECK: x
-    #[account(signer, mut)]
+    #[account(
+        signer,
+        mut,
+        constraint = truster_authority.key.as_ref() != trustee_ubi_info.authority.as_ref()
+    )]
     pub truster_authority: AccountInfo<'info>,
 }
 
@@ -149,12 +149,12 @@ pub struct UBIInfo {
     authority: Pubkey,
     last_issuance: i64,
     last_trust_given: i64,
-    // [u8; 32] * TRUST_COEFF
+    // [u8; 32] * 10 (constant, only fills up to TRUST_COEFF)
     trusters: Vec<Pubkey>,
-    trusted: bool,
+    is_trusted: bool,
 }
 
 impl UBIInfo {
     // in bytes
-    pub const MAX_SIZE: usize = 32 + 8 + 8 + (4 + 32 * TRUST_COEFF as usize) + 1;
+    pub const MAX_SIZE: usize = 32 + 8 + 8 + (4 + 32 * 10) + 1;
 }
