@@ -7,6 +7,7 @@ const UBI_INFO: &str = "ubi_info5";
 const STATE: &str = "state";
 const TRUST_COEFF: u8 = 3;
 const INITIAL_RATE: u64 = 20_000_000_000;
+const INITIAL_CAP: u128 = 20__000_000_000__000_000_000;
 const PRODUCTION: bool = false;
 
 declare_id!("EcFTDXxknt3vRBi1pVZYN7SjZLcbHjJRAmCmjZ7Js3fd");
@@ -14,6 +15,10 @@ declare_id!("EcFTDXxknt3vRBi1pVZYN7SjZLcbHjJRAmCmjZ7Js3fd");
 //mint 4jzEiVCdX5DbcadqChrrvWaYJT7YHGy3cnH4peN3fc54
 //tokacc HfNY5k4T4xQVeYASUvDZE12MRyCj4hqGNJ6yuZGPshAx
 //pda Bd4vag5JXn2RrGFw8VySP93QYouw5J8D3f1KCy3iUXRN
+
+pub fn rate(cap_left: u128) -> u64 {
+    (10_i32.pow(9) + ((19*10_i32.pow(9)) as f32 * (2.73_f32.powf((cap_left / INITIAL_CAP) as f32))) as i32).try_into().unwrap()
+}
 
 #[program]
 pub mod solana_ubi {
@@ -28,8 +33,8 @@ pub mod solana_ubi {
         //     Err(1)
         // } else {
             // variable rate starts at 20 tok per day (9 decimal places)
-            let rate: u64 = ctx.accounts.state.rate;
-            let amount: u64 = (rate * (now_ts - ctx.accounts.ubi_info.last_issuance) as u64 / 86400) as u64;
+            let current_rate: u64 = ctx.accounts.state.rate;
+            let amount: u64 = (current_rate * (now_ts - ctx.accounts.ubi_info.last_issuance) as u64 / 86400) as u64;
             // Mint Redeemable to user Redeemable account.
             let seeds = &[
                 MINTER.as_bytes(),
@@ -45,7 +50,8 @@ pub mod solana_ubi {
             let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts, signer);
             token::mint_to(cpi_ctx, amount)?;
             ctx.accounts.ubi_info.last_issuance = now_ts;
-            ctx.accounts.state.rate = ctx.accounts.state.rate - amount;
+            ctx.accounts.state.cap_left = ctx.accounts.state.cap_left - amount as u128;
+            ctx.accounts.state.rate = rate(ctx.accounts.state.cap_left);
             Ok(0) //Ok(Ok(0))
         // }.expect("")
     }
@@ -82,6 +88,7 @@ pub mod solana_ubi {
         let acc = &mut ctx.accounts.state;
 
         acc.rate = INITIAL_RATE;
+        acc.cap_left = INITIAL_CAP;
 
         Ok(0)
     }
@@ -169,7 +176,7 @@ pub struct InitializeMint<'info> {
     #[account(
         init,
         payer = user_authority,
-        space = 8 + 64,
+        space = 8 + 64 + 128,
         seeds = [STATE.as_bytes()],
         bump
     )]
@@ -199,5 +206,6 @@ impl UBIInfo {
 
 #[account]
 pub struct State {
-    rate: u64
+    rate: u64,
+    cap_left: u128
 }
