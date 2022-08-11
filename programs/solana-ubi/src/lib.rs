@@ -6,7 +6,7 @@ const MINTER: &str = "minter";
 const UBI_INFO: &str = "ubi_info5";
 const STATE: &str = "state";
 const TRUST_COEFF: u8 = 3;
-const INITIAL_RATE: u64 = 20_000_000;
+const INITIAL_RATE: u64 = 20_000_000_000;
 const PRODUCTION: bool = false;
 
 declare_id!("EcFTDXxknt3vRBi1pVZYN7SjZLcbHjJRAmCmjZ7Js3fd");
@@ -27,8 +27,9 @@ pub mod solana_ubi {
         // if now_ts < ctx.accounts.ubi_info.last_issuance + 23 * 60 * 60 {
         //     Err(1)
         // } else {
-            // approx rate of 10 tok per day (9 decimal places)
-            let amount: u64 = (115_740 * (now_ts - ctx.accounts.ubi_info.last_issuance)) as u64;
+            // variable rate starts at 20 tok per day (9 decimal places)
+            let rate: u64 = ctx.accounts.state.rate;
+            let amount: u64 = (rate * (now_ts - ctx.accounts.ubi_info.last_issuance) / 86400) as u64;
             // Mint Redeemable to user Redeemable account.
             let seeds = &[
                 MINTER.as_bytes(),
