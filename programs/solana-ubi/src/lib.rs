@@ -4,7 +4,9 @@ use anchor_spl::token::{self, Mint, MintTo, TokenAccount};
 
 const MINTER: &str = "minter";
 const UBI_INFO: &str = "ubi_info5";
+const STATE: &str = "state";
 const TRUST_COEFF: u8 = 3;
+const INITIAL_RATE: u64 = 20_000_000;
 const PRODUCTION: bool = false;
 
 declare_id!("EcFTDXxknt3vRBi1pVZYN7SjZLcbHjJRAmCmjZ7Js3fd");
@@ -42,6 +44,7 @@ pub mod solana_ubi {
             let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts, signer);
             token::mint_to(cpi_ctx, amount)?;
             ctx.accounts.ubi_info.last_issuance = now_ts;
+            ctx.accounts.state.rate = ctx.accounts.state.rate - amount;
             Ok(0) //Ok(Ok(0))
         // }.expect("")
     }
@@ -61,7 +64,7 @@ pub mod solana_ubi {
         }.expect("")
     }
 
-    pub fn initialize(ctx: Context<Initialize>) -> Result<u8> {
+    pub fn initialize_account(ctx: Context<InitializeAccount>) -> Result<u8> {
         let now_ts: i64 = Clock::get().unwrap().unix_timestamp;
         let acc = &mut ctx.accounts.ubi_info;
 
@@ -70,6 +73,14 @@ pub mod solana_ubi {
         acc.last_trust_given = now_ts - 24 * 60 * 60;
         acc.is_trusted = !PRODUCTION;
         acc.last_issuance = now_ts - 24 * 60 * 60;
+
+        Ok(0)
+    }
+
+    pub fn initialize_mint(ctx: Context<InitializeMint>) -> Result<u8> {
+        let acc = &mut ctx.accounts.state;
+
+        acc.rate = INITIAL_RATE;
 
         Ok(0)
     }
@@ -99,6 +110,15 @@ pub struct MintUBI<'info> {
         bump
     )]
     pub ubi_info: Account<'info, UBIInfo>,
+
+    #[account(
+        init,
+        payer = user_authority,
+        space = 8 + 64,
+        seeds = [STATE.as_bytes()],
+        bump
+    )]
+    pub state: Account<'info, State>,
     /// CHECK: x
     #[account(constraint = token_program.key == & token::ID)]
     pub token_program: AccountInfo<'info>,
@@ -127,7 +147,7 @@ pub struct TrustUser<'info> {
 }
 
 #[derive(Accounts)]
-pub struct Initialize<'info> {
+pub struct InitializeAccount<'info> {
     #[account(
         init,
         payer = user_authority,
@@ -136,6 +156,23 @@ pub struct Initialize<'info> {
         bump
     )]
     pub ubi_info: Account<'info, UBIInfo>,
+    /// CHECK: x
+    #[account(signer, mut)]
+    pub user_authority: AccountInfo<'info>,
+
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct InitializeMint<'info> {
+    #[account(
+        init,
+        payer = user_authority,
+        space = 8 + 64,
+        seeds = [STATE.as_bytes()],
+        bump
+    )]
+    pub state: Account<'info, State>,
     /// CHECK: x
     #[account(signer, mut)]
     pub user_authority: AccountInfo<'info>,
@@ -157,4 +194,9 @@ pub struct UBIInfo {
 impl UBIInfo {
     // in bytes
     pub const MAX_SIZE: usize = 32 + 8 + 8 + (4 + 32 * 10) + 1;
+}
+
+#[account]
+pub struct State {
+    rate: u64
 }
