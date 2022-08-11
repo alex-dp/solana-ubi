@@ -29,7 +29,7 @@ pub mod solana_ubi {
         // } else {
             // variable rate starts at 20 tok per day (9 decimal places)
             let rate: u64 = ctx.accounts.state.rate;
-            let amount: u64 = (rate * (now_ts - ctx.accounts.ubi_info.last_issuance) / 86400) as u64;
+            let amount: u64 = (rate * (now_ts - ctx.accounts.ubi_info.last_issuance) as u64 / 86400) as u64;
             // Mint Redeemable to user Redeemable account.
             let seeds = &[
                 MINTER.as_bytes(),
