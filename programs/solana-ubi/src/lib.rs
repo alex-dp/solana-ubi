@@ -6,7 +6,6 @@ const MINTER: &str = "minter";
 const UBI_INFO: &str = "ubi_info5";
 const STATE: &str = "state";
 const TRUST_COEFF: u8 = 3;
-const INITIAL_RATE: u64 = 20_000_000_000;
 const INITIAL_CAP: u128 = 20__000_000_000__000_000_000;
 const PRODUCTION: bool = false;
 
@@ -87,7 +86,7 @@ pub mod solana_ubi {
     pub fn initialize_mint(ctx: Context<InitializeMint>) -> Result<u8> {
         let acc = &mut ctx.accounts.state;
 
-        acc.rate = INITIAL_RATE;
+        acc.rate = rate(INITIAL_CAP);
         acc.cap_left = INITIAL_CAP;
 
         Ok(0)
@@ -113,7 +112,7 @@ pub struct MintUBI<'info> {
     // is program account. NOTE been initialized
     #[account(
         mut,
-        constraint = ubi_info.authority == *user_authority.key,
+        constraint = ubi_info.authority == *user_authority.key && Clock::get().unwrap().unix_timestamp > ubi_info.last_issuance + 23 * 60 * 60,
         seeds = [UBI_INFO.as_bytes(), &user_authority.key.to_bytes()],
         bump
     )]
