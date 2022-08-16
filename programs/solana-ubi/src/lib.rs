@@ -3,8 +3,8 @@ use anchor_lang::solana_program::program_option::COption;
 use anchor_spl::token::{self, Mint, MintTo, TokenAccount};
 
 const MINTER: &str = "minter";
-const UBI_INFO: &str = "ubi_info5";
-const STATE: &str = "state";
+const UBI_INFO: &str = "ubi_info7";
+const STATE: &str = "state1";
 const TRUST_COEFF: u8 = 3;
 const INITIAL_CAP: u128 = 20__000_000_000__000_000_000;
 const PRODUCTION: bool = false;
@@ -16,7 +16,9 @@ declare_id!("EcFTDXxknt3vRBi1pVZYN7SjZLcbHjJRAmCmjZ7Js3fd");
 //pda Bd4vag5JXn2RrGFw8VySP93QYouw5J8D3f1KCy3iUXRN
 
 pub fn rate(cap_left: u128) -> u64 {
-    (10_i32.pow(9) + ((19*10_i32.pow(9)) as f32 * (2.73_f32.powf((cap_left / INITIAL_CAP) as f32))) as i32).try_into().unwrap()
+    // 1B    + 19B        e^ (c_left/c_i)
+    // 10**9 + 19*10**9 * e**(fraction_cap_left)
+    1000000000_u64 + ((19000000000_f64) * (2.73_f64.powf((cap_left as f64/INITIAL_CAP as f64)as f64))) as u64
 }
 
 #[program]
@@ -27,32 +29,29 @@ pub mod solana_ubi {
         ctx: Context<MintUBI>
     ) -> Result<u8> {
         let now_ts = Clock::get().unwrap().unix_timestamp;
-        //TODO urgent fix this. and other time checks. can it go in the constraints?
-        // if now_ts < ctx.accounts.ubi_info.last_issuance + 23 * 60 * 60 {
-        //     Err(1)
-        // } else {
-            // variable rate starts at 20 tok per day (9 decimal places)
-            let current_rate: u64 = ctx.accounts.state.rate;
-            let amount: u64 = (current_rate * (now_ts - ctx.accounts.ubi_info.last_issuance) as u64 / 86400) as u64;
-            // Mint Redeemable to user Redeemable account.
-            let seeds = &[
-                MINTER.as_bytes(),
-                &[255]
-            ];
-            let signer = &[&seeds[..]];
-            let cpi_accounts = MintTo {
-                mint: ctx.accounts.ubi_mint.to_account_info(),
-                to: ctx.accounts.ubi_token_account.to_account_info(),
-                authority: ctx.accounts.mint_signer.clone(),
-            };
-            let cpi_program = ctx.accounts.token_program.clone();
-            let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts, signer);
-            token::mint_to(cpi_ctx, amount)?;
-            ctx.accounts.ubi_info.last_issuance = now_ts;
-            ctx.accounts.state.cap_left = ctx.accounts.state.cap_left - amount as u128;
-            ctx.accounts.state.rate = rate(ctx.accounts.state.cap_left);
-            Ok(0) //Ok(Ok(0))
-        // }.expect("")
+
+        // variable rate starts at 20 tok per day (9 decimal places)
+        let state = &mut ctx.accounts.state;
+        let current_rate: u64 = rate(state.cap_left);
+        let seconds_elapsed: u64 = (now_ts - ctx.accounts.ubi_info.last_issuance) as u64;
+        let amount: u64 = (current_rate * seconds_elapsed / 86400) as u64;
+        // Mint Redeemable to user Redeemable account.
+        let seeds = &[
+            MINTER.as_bytes(),
+            &[255]
+        ];
+        let signer = &[&seeds[..]];
+        let cpi_accounts = MintTo {
+            mint: ctx.accounts.ubi_mint.to_account_info(),
+            to: ctx.accounts.ubi_token_account.to_account_info(),
+            authority: ctx.accounts.mint_signer.clone(),
+        };
+        let cpi_program = ctx.accounts.token_program.clone();
+        let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts, signer);
+        token::mint_to(cpi_ctx, amount)?;
+        ctx.accounts.ubi_info.last_issuance = now_ts;
+        state.cap_left = state.cap_left - amount as u128;
+        Ok(0)
     }
 
     pub fn trust(ctx: Context<TrustUser>) -> Result<u8> {
@@ -75,7 +74,7 @@ pub mod solana_ubi {
         let acc = &mut ctx.accounts.ubi_info;
 
         acc.authority = *ctx.accounts.user_authority.key;
-        acc.trusters = Vec::new();
+        acc.trusters = Vec::with_capacity(10);
         acc.last_trust_given = now_ts - 24 * 60 * 60;
         acc.is_trusted = !PRODUCTION;
         acc.last_issuance = now_ts - 24 * 60 * 60;
@@ -86,7 +85,6 @@ pub mod solana_ubi {
     pub fn initialize_mint(ctx: Context<InitializeMint>) -> Result<u8> {
         let acc = &mut ctx.accounts.state;
 
-        acc.rate = rate(INITIAL_CAP);
         acc.cap_left = INITIAL_CAP;
 
         Ok(0)
@@ -109,7 +107,7 @@ pub struct MintUBI<'info> {
         token::authority = user_authority
     )]
     pub ubi_token_account: Account<'info, TokenAccount>,
-    // is program account. NOTE been initialized
+    // is program account. NOTE is initialized TODO bump: different user_authority will produce a bump, most often 255 but might be any 0 <= bump <= 255!
     #[account(
         mut,
         constraint = ubi_info.authority == *user_authority.key && Clock::get().unwrap().unix_timestamp > ubi_info.last_issuance + 23 * 60 * 60,
@@ -118,10 +116,8 @@ pub struct MintUBI<'info> {
     )]
     pub ubi_info: Account<'info, UBIInfo>,
 
+    // unique program account, is already initialized, will set STATE so that bump = 255
     #[account(
-        init,
-        payer = user_authority,
-        space = 8 + 64,
         seeds = [STATE.as_bytes()],
         bump
     )]
@@ -175,7 +171,7 @@ pub struct InitializeMint<'info> {
     #[account(
         init,
         payer = user_authority,
-        space = 8 + 64 + 128,
+        space = 8 + State::MAX_SIZE,
         seeds = [STATE.as_bytes()],
         bump
     )]
@@ -205,6 +201,10 @@ impl UBIInfo {
 
 #[account]
 pub struct State {
-    rate: u64,
     cap_left: u128
+}
+
+impl State {
+    //in bytes
+    pub const MAX_SIZE: usize = 128;
 }

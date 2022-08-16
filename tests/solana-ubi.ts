@@ -21,7 +21,7 @@ describe("solana-ubi", () => {
 	arr[5] = 2
 	let auth = anchor.web3.Keypair.fromSeed(arr);
 	let pda = anchor.utils.publicKey.findProgramAddressSync(
-    	["ubi_info5", auth.publicKey.toBytes()],
+    	["ubi_info7", auth.publicKey.toBytes()],
     	program.programId
     )
     
@@ -29,13 +29,27 @@ describe("solana-ubi", () => {
     	["minter"],
     	program.programId
     )
-    
+
+  let state_pda = anchor.utils.publicKey.findProgramAddressSync(
+      ["state1"],
+      program.programId
+    )
+
+  console.log("state pda", state_pda[0].toString(), "bump", state_pda[1])
   console.log("auth", auth.publicKey.toString())
   console.log("mint signer", mint_signer[0].toString())
   console.log("ubi info pda", pda[0].toString())
+
+  it("Program state is initialized!", async () => {
+    const tx = await program.methods.initializeMint().accounts({
+      state: state_pda[0],
+      userAuthority: auth.publicKey,
+      systemProgram: SystemProgram.programId
+    }).signers([auth]).rpc();
+  });
   
-  it("Is initialized!", async () => {
-    const tx = await program.methods.initialize().accounts({
+  it("Account is initialized!", async () => {
+    const tx = await program.methods.initializeAccount().accounts({
           ubiInfo: pda[0],
           userAuthority: auth.publicKey,
           systemProgram: SystemProgram.programId
@@ -53,7 +67,8 @@ describe("solana-ubi", () => {
           ubiInfo: pda[0],
           tokenProgram: anchor.utils.token.TOKEN_PROGRAM_ID,
           systemProgram: SystemProgram.programId,
-          rent: SYSVAR_RENT_PUBKEY
+          rent: SYSVAR_RENT_PUBKEY,
+          state: state_pda[0]
       }).signers([auth]).rpc();
     console.log("Your transaction signature", tx);
   });
