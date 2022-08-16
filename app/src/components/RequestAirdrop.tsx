@@ -3,11 +3,20 @@ import { LAMPORTS_PER_SOL, TransactionSignature } from '@solana/web3.js';
 import { FC, useCallback } from 'react';
 import { notify } from "../utils/notifications";
 import useUserSOLBalanceStore from '../stores/useUserSOLBalanceStore';
+import * as anchor from "@project-serum/anchor";
+import { Program } from "@project-serum/anchor";
+import { SystemProgram, SYSVAR_RENT_PUBKEY } from "@solana/web3.js";
+import { SolanaUbi } from "/home/alex/Documenti/solana-ubi/target/types/solana_ubi";
+
 
 export const RequestAirdrop: FC = () => {
     const { connection } = useConnection();
     const { publicKey } = useWallet();
     const { getUserSOLBalance } = useUserSOLBalanceStore();
+
+    const anchor = require("@project-serum/anchor");
+    console.log(anchor.workspace)
+    const program = anchor.workspace.solanaUbi;
 
     const onClick = useCallback(async () => {
         if (!publicKey) {
@@ -30,7 +39,7 @@ export const RequestAirdrop: FC = () => {
         }
     }, [publicKey, connection, getUserSOLBalance]);
 
-    const programID = new PublicKey(idl.metadata.address);
+    // const programID = new PublicKey(idl.metadata.address);
 
     return (
         <div>

@@ -32,8 +32,9 @@ pub mod solana_ubi {
 
         // variable rate starts at 20 tok per day (9 decimal places)
         let state = &mut ctx.accounts.state;
+        let ubi_info = &mut ctx.accounts.ubi_info;
         let current_rate: u64 = rate(state.cap_left);
-        let seconds_elapsed: u64 = (now_ts - ctx.accounts.ubi_info.last_issuance) as u64;
+        let seconds_elapsed: u64 = (now_ts - ubi_info.last_issuance) as u64;
         let amount: u64 = (current_rate * seconds_elapsed / 86400) as u64;
         // Mint Redeemable to user Redeemable account.
         let seeds = &[
@@ -49,24 +50,23 @@ pub mod solana_ubi {
         let cpi_program = ctx.accounts.token_program.clone();
         let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts, signer);
         token::mint_to(cpi_ctx, amount)?;
-        ctx.accounts.ubi_info.last_issuance = now_ts;
+        ubi_info.last_issuance = now_ts;
         state.cap_left = state.cap_left - amount as u128;
         Ok(0)
     }
 
     pub fn trust(ctx: Context<TrustUser>) -> Result<u8> {
-        let now_ts: i64 = Clock::get().unwrap().unix_timestamp;
-        if now_ts < ctx.accounts.truster_ubi_info.last_trust_given + 24 * 60 * 60 {
-            Err(3)
-        } else {
-            ctx.accounts.trustee_ubi_info.trusters.push(*ctx.accounts.truster_authority.key);
 
-            if ctx.accounts.trustee_ubi_info.trusters.len() >= TRUST_COEFF as usize {
-                ctx.accounts.trustee_ubi_info.is_trusted = true;
-            }
-            ctx.accounts.truster_ubi_info.last_trust_given = now_ts;
-            Ok(Ok(0))
-        }.expect("")
+        let trustee = &mut ctx.accounts.trustee_ubi_info;
+        let truster = &mut ctx.accounts.truster_ubi_info;
+
+        trustee.trusters.push(*ctx.accounts.truster_authority.key);
+
+        if trustee.trusters.len() >= TRUST_COEFF as usize {
+            ctx.accounts.trustee_ubi_info.is_trusted = true;
+        }
+        truster.last_trust_given = Clock::get().unwrap().unix_timestamp;
+        Ok(0)
     }
 
     pub fn initialize_account(ctx: Context<InitializeAccount>) -> Result<u8> {
@@ -107,10 +107,11 @@ pub struct MintUBI<'info> {
         token::authority = user_authority
     )]
     pub ubi_token_account: Account<'info, TokenAccount>,
-    // is program account. NOTE is initialized TODO bump: different user_authority will produce a bump, most often 255 but might be any 0 <= bump <= 255!
+    // is program account. NOTE is initialized
+    // TODO bump: different user_authority will produce a bump, most often 255 but might be any 0 <= bump <= 255
     #[account(
         mut,
-        constraint = ubi_info.authority == *user_authority.key && Clock::get().unwrap().unix_timestamp > ubi_info.last_issuance + 23 * 60 * 60,
+        constraint = ubi_info.authority == *user_authority.key && Clock::get().unwrap().unix_timestamp.gt(&(ubi_info.last_issuance + 23*60*60)),
         seeds = [UBI_INFO.as_bytes(), &user_authority.key.to_bytes()],
         bump
     )]
@@ -138,7 +139,10 @@ pub struct TrustUser<'info> {
         constraint = trustee_ubi_info.is_trusted
     )]
     pub trustee_ubi_info: Account<'info, UBIInfo>,
-    #[account(mut, constraint = truster_ubi_info.authority == *truster_authority.key)]
+    #[account(
+        mut,
+        constraint = truster_ubi_info.authority == *truster_authority.key && Clock::get().unwrap().unix_timestamp.gt(&(truster_ubi_info.last_trust_given + 24 * 60 * 60))
+    )]
     pub truster_ubi_info: Account<'info, UBIInfo>,
     /// CHECK: x
     #[account(
