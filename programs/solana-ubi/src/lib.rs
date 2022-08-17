@@ -33,7 +33,8 @@ pub mod solana_ubi {
         // variable rate starts at 20 tok per day (9 decimal places)
         let state = &mut ctx.accounts.state;
         let ubi_info = &mut ctx.accounts.ubi_info;
-        let current_rate: u64 = rate(state.cap_left);
+        let cap_left = state.cap_left.clone();
+        let current_rate: u64 = rate(cap_left);
         let seconds_elapsed: u64 = (now_ts - ubi_info.last_issuance) as u64;
         let amount: u64 = (current_rate * seconds_elapsed / 86400) as u64;
         // Mint Redeemable to user Redeemable account.
@@ -51,7 +52,7 @@ pub mod solana_ubi {
         let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts, signer);
         token::mint_to(cpi_ctx, amount)?;
         ubi_info.last_issuance = now_ts;
-        state.cap_left = state.cap_left - amount as u128;
+        state.cap_left = cap_left - amount as u128;
         Ok(0)
     }
 
@@ -63,7 +64,7 @@ pub mod solana_ubi {
         trustee.trusters.push(*ctx.accounts.truster_authority.key);
 
         if trustee.trusters.len() >= TRUST_COEFF as usize {
-            ctx.accounts.trustee_ubi_info.is_trusted = true;
+            trustee.is_trusted = true;
         }
         truster.last_trust_given = Clock::get().unwrap().unix_timestamp;
         Ok(0)
@@ -111,17 +112,14 @@ pub struct MintUBI<'info> {
     // TODO bump: different user_authority will produce a bump, most often 255 but might be any 0 <= bump <= 255
     #[account(
         mut,
-        constraint = ubi_info.authority == *user_authority.key && Clock::get().unwrap().unix_timestamp.gt(&(ubi_info.last_issuance + 23*60*60)),
+        constraint = ubi_info.authority == *user_authority.key && Clock::get().unwrap().unix_timestamp.gt(&(ubi_info.last_issuance + 60)),
         seeds = [UBI_INFO.as_bytes(), &user_authority.key.to_bytes()],
         bump
     )]
     pub ubi_info: Account<'info, UBIInfo>,
 
     // unique program account, is already initialized, will set STATE so that bump = 255
-    #[account(
-        seeds = [STATE.as_bytes()],
-        bump
-    )]
+    #[account(mut, seeds = [STATE.as_bytes()], bump)]
     pub state: Account<'info, State>,
     /// CHECK: x
     #[account(constraint = token_program.key == & token::ID)]
