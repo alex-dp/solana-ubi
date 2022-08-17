@@ -112,7 +112,7 @@ pub struct MintUBI<'info> {
     // TODO bump: different user_authority will produce a bump, most often 255 but might be any 0 <= bump <= 255
     #[account(
         mut,
-        constraint = ubi_info.authority == *user_authority.key && Clock::get().unwrap().unix_timestamp.gt(&(ubi_info.last_issuance + 60)),
+        constraint = ubi_info.authority == *user_authority.key && Clock::get().unwrap().unix_timestamp.gt(&(ubi_info.last_issuance + 23*3600)),
         seeds = [UBI_INFO.as_bytes(), &user_authority.key.to_bytes()],
         bump
     )]
