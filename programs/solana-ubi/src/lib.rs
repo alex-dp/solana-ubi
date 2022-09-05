@@ -11,14 +11,15 @@ const PRODUCTION: bool = false;
 
 declare_id!("EcFTDXxknt3vRBi1pVZYN7SjZLcbHjJRAmCmjZ7Js3fd");
 
-//mint 4jzEiVCdX5DbcadqChrrvWaYJT7YHGy3cnH4peN3fc54
+//mint   4jzEiVCdX5DbcadqChrrvWaYJT7YHGy3cnH4peN3fc54
 //tokacc HfNY5k4T4xQVeYASUvDZE12MRyCj4hqGNJ6yuZGPshAx
-//pda Bd4vag5JXn2RrGFw8VySP93QYouw5J8D3f1KCy3iUXRN
+//pda    Bd4vag5JXn2RrGFw8VySP93QYouw5J8D3f1KCy3iUXRN
 
 pub fn rate(cap_left: u128) -> u64 {
+    if cap_left == 0 { return 20_000_000_000 }
     // 1B    + 19B        e^ (c_left/c_i)
     // 10**9 + 19*10**9 * e**(fraction_cap_left)
-    1000000000_u64 + ((19000000000_f64) * (2.73_f64.powf((cap_left as f64/INITIAL_CAP as f64)as f64))) as u64
+    1_000_000_000_u64 + ((19_000_000_000_f64) * (2.73_f64.powf((cap_left as f64/INITIAL_CAP as f64)as f64))) as u64
 }
 
 #[program]
@@ -33,7 +34,7 @@ pub mod solana_ubi {
         // variable rate starts at 20 tok per day (9 decimal places)
         let state = &mut ctx.accounts.state;
         let ubi_info = &mut ctx.accounts.ubi_info;
-        let cap_left = state.cap_left.clone();
+        let cap_left = state.cap_left;
         let current_rate: u64 = rate(cap_left);
         let seconds_elapsed: u64 = (now_ts - ubi_info.last_issuance) as u64;
         let amount: u64 = (current_rate * seconds_elapsed / 86400) as u64;
