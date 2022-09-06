@@ -1,5 +1,5 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { Transaction, TransactionSignature, sendAndConfirmTransaction } from '@solana/web3.js';
+import { Transaction, TransactionSignature } from '@solana/web3.js';
 import { FC, useCallback } from 'react';
 import { notify } from "../utils/notifications";
 import useUserSOLBalanceStore from '../stores/useUserSOLBalanceStore';
@@ -7,6 +7,11 @@ import useUserSOLBalanceStore from '../stores/useUserSOLBalanceStore';
 import { Buffer } from 'buffer';
 import { Connection, PublicKey } from '@solana/web3.js';
 import { Program, AnchorProvider, web3 } from '@project-serum/anchor';
+
+import {
+    createAssociatedTokenAccountInstruction,
+    getAssociatedTokenAddress,
+  } from "@solana/spl-token";
 
 import idl from '../idl.json'
 
@@ -49,7 +54,36 @@ export const InitializeAccount: FC = () => {
         let provider = null
 
         try {
-            console.log("provider ", provider)
+            let ata = await getAssociatedTokenAddress(
+                new PublicKey("2bH6Z8Apr5495DuuPXbmgSQ5du3vB5fNSarrPXy49gW7"), // mint
+                wallet.publicKey, // owner
+                false // allow owner off curve
+            );
+            console.log(`ata: ${ata.toBase58()}`);
+        
+            let tx = new Transaction();
+            tx.add(
+                createAssociatedTokenAccountInstruction(
+                wallet.publicKey, // payer
+                ata, // ata
+                wallet.publicKey, // owner
+                new PublicKey("2bH6Z8Apr5495DuuPXbmgSQ5du3vB5fNSarrPXy49gW7") // mint
+                )
+            );
+
+            signature = await wallet.sendTransaction(tx, connection);
+
+            await connection.confirmTransaction(signature);
+            console.log(signature);
+
+            console.log("Your transaction signature", signature.toString());
+            notify({ type: 'success', message: 'UBI token account created!!', txid: signature });
+        } catch (error) {
+            notify({ type: 'error', message: `Transaction failed!`, description: error?.message, txid: signature });
+            console.log('error', `Transaction failed! ${error?.message}`, signature);
+        }
+
+        try {
 
             console.log("pda ", pda[0].toString())
 
@@ -72,7 +106,7 @@ export const InitializeAccount: FC = () => {
             console.log(signature);
 
             console.log("Your transaction signature", signature.toString());
-            notify({ type: 'success', message: 'Transaction successful!', txid: signature });
+            notify({ type: 'success', message: 'UBI account created!!', txid: signature });
         } catch (error) {
             notify({ type: 'error', message: `Transaction failed!`, description: error?.message, txid: signature });
             console.log('error', `Transaction failed! ${error?.message}`, signature);
