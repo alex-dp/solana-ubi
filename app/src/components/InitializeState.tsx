@@ -74,7 +74,13 @@ export const InitializeState: FC = () => {
 
             signature = await wallet.sendTransaction(transaction, connection);
 
-            await connection.confirmTransaction(signature);
+            const latestBlockHash = await connection.getLatestBlockhash();
+
+            await connection.confirmTransaction({
+                blockhash: latestBlockHash.blockhash,
+                lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+                signature: signature,
+            });
             console.log(signature);
 
             console.log("Your transaction signature", signature.toString());

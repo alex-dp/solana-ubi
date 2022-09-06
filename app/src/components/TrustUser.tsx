@@ -82,7 +82,13 @@ export const TrustUser: FC = () => {
 
             signature = await wallet.sendTransaction(transaction, connection);
 
-            await connection.confirmTransaction(signature);
+            const latestBlockHash = await connection.getLatestBlockhash();
+
+            await connection.confirmTransaction({
+                blockhash: latestBlockHash.blockhash,
+                lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+                signature: signature,
+            });
             
             console.log("Your transaction signature", signature.toString());
             notify({ type: 'success', message: 'Transaction successful!', txid: signature });
