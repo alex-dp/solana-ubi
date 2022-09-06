@@ -21,7 +21,6 @@ export const Mint: FC = () => {
     const { getUserSOLBalance } = useUserSOLBalanceStore();
 
     const getProvider = () => {
-        //Creating a provider, the provider is authenication connection to solana
         const connection = new Connection("https://api.devnet.solana.com");
         const provider = new AnchorProvider(
             connection,
@@ -32,6 +31,7 @@ export const Mint: FC = () => {
     };
 
     const onClick = useCallback(async () => {
+        const idl = await Program.fetchIdl(programID, getProvider())
         if (!wallet.publicKey) {
             console.log('error', 'Wallet not connected!');
             notify({ type: 'error', message: 'error', description: 'Wallet not connected!' });

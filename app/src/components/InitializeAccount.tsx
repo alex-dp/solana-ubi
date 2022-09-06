@@ -27,9 +27,11 @@ export const InitializeAccount: FC = () => {
             AnchorProvider.defaultOptions()
         );
         return provider;
-    };    
+    };
 
     const onClick = useCallback(async () => {
+
+        const idl = await Program.fetchIdl(programID, getProvider())
 
         if (!wallet.publicKey) {
             console.log('error', 'Wallet not connected!');

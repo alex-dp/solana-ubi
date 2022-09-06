@@ -31,7 +31,7 @@ export const TrustUser: FC = () => {
     };
 
     const onClick = useCallback(async () => {
-
+        const idl = await Program.fetchIdl(programID, getProvider())
         if (!wallet.publicKey) {
             console.log('error', 'Wallet not connected!');
             notify({ type: 'error', message: 'error', description: 'Wallet not connected!' });
