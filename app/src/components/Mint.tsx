@@ -10,6 +10,7 @@ import { Program, AnchorProvider, web3 } from '@project-serum/anchor';
 
 import idl from '../idl.json'
 import { TOKEN_PROGRAM_ID } from '@project-serum/anchor/dist/cjs/utils/token';
+import { getAssociatedTokenAddress } from '@solana/spl-token';
 
 const { SystemProgram } = web3;
 
@@ -59,6 +60,12 @@ export const Mint: FC = () => {
             programID
         )
 
+        let ata = await getAssociatedTokenAddress(
+            new PublicKey("2bH6Z8Apr5495DuuPXbmgSQ5du3vB5fNSarrPXy49gW7"), // mint
+            wallet.publicKey, // owner
+            false // allow owner off curve
+        );
+
         let signature: TransactionSignature = '';
 
         try {
@@ -73,7 +80,7 @@ export const Mint: FC = () => {
                     mintSigner: mint_signer[0],
                     ubiMint: "2bH6Z8Apr5495DuuPXbmgSQ5du3vB5fNSarrPXy49gW7",
                     userAuthority: wallet.publicKey,
-                    ubiTokenAccount: "huoyrEXK6woNowgjtYezPZDbrNcHZXjvfxX5BhpVDbs",
+                    ubiTokenAccount: ata[0],
                     ubiInfo: pda[0],
                     state: "BfNHs2d373sCcxw5MjNmgLgQCEoFHM3Hv8XpEvqePLjD",
                     tokenProgram: TOKEN_PROGRAM_ID,
