@@ -1,24 +1,18 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { Transaction, TransactionSignature, sendAndConfirmTransaction } from '@solana/web3.js';
+import { Transaction, TransactionSignature } from '@solana/web3.js';
 import { FC, useCallback } from 'react';
 import { notify } from "../utils/notifications";
 import useUserSOLBalanceStore from '../stores/useUserSOLBalanceStore';
 
 import { Buffer } from 'buffer';
-import { Connection, PublicKey, clusterApiUrl } from '@solana/web3.js';
+import { Connection, PublicKey } from '@solana/web3.js';
 import { Program, AnchorProvider, web3 } from '@project-serum/anchor';
 
 import idl from '../pages/idl.json'
 
-const { SystemProgram, Keypair } = web3;
+const { SystemProgram } = web3;
 
 const programID = new PublicKey(idl.metadata.address);
-
-const network = clusterApiUrl("devnet")
-
-let arr = new Uint8Array(32).fill(7);
-arr[5] = 2
-let auth = Keypair.fromSeed(arr)
 
 let state_pda = PublicKey.findProgramAddressSync(
     [Buffer.from("state1")],
@@ -27,7 +21,7 @@ let state_pda = PublicKey.findProgramAddressSync(
 
 export const InitializeState: FC = () => {
     const { connection } = useConnection();
-    const { publicKey } = useWallet();
+    const wallet = useWallet();
     const { getUserSOLBalance } = useUserSOLBalanceStore();
 
     const getProvider = () => {
@@ -35,7 +29,7 @@ export const InitializeState: FC = () => {
         const connection = new Connection("https://api.devnet.solana.com");
         const provider = new AnchorProvider(
             connection,
-            window.solflare,
+            wallet,
             AnchorProvider.defaultOptions()
         );
         return provider;
@@ -43,7 +37,7 @@ export const InitializeState: FC = () => {
 
     const onClick = useCallback(async () => {
 
-        if (!publicKey) {
+        if (!wallet.publicKey) {
             console.log('error', 'Wallet not connected!');
             notify({ type: 'error', message: 'error', description: 'Wallet not connected!' });
             return;
@@ -62,9 +56,8 @@ export const InitializeState: FC = () => {
         console.log("pda ", state_pda[0].toString())
 
         try {
-            console.log(auth.publicKey.toString())
 
-            const program = new Program(idl, programID, provider) //program will communicate to solana network via rpc using lib.json as model
+            const program = new Program(idl, programID, provider)
             console.log(program);
 
             let transaction = new Transaction();
@@ -72,23 +65,28 @@ export const InitializeState: FC = () => {
             transaction.add(
                 await program.methods.initializeMint().accounts({
                     state: state_pda[0],
-                    userAuthority: auth.publicKey,
+                    userAuthority: wallet.publicKey,
                     systemProgram: SystemProgram.programId
                 }).instruction()
             );
 
-            sendAndConfirmTransaction(connection, transaction, [auth])
-            console.log("Your transaction signature", transaction.signature.toString());
-        } catch (error) { console.log(error) }
-        return;
-        //  notify({ type: 'error', message: `Airdrop failed!`, description: error?.message, txid: signature });
+            signature = await wallet.sendTransaction(transaction, connection);
 
-    }, [publicKey, connection, getUserSOLBalance]);
+            await connection.confirmTransaction(signature);
+            console.log(signature);
+
+            console.log("Your transaction signature", signature.toString());
+            notify({ type: 'success', message: 'Transaction successful!', txid: signature });
+        } catch (error) {
+            notify({ type: 'error', message: `Transaction failed!`, description: error?.message, txid: signature });
+            console.log('error', `Transaction failed! ${error?.message}`, signature);
+        }
+    }, [wallet.publicKey, connection, getUserSOLBalance]);
 
     return (
         <div>
             <button
-                className="px-8 m-2 btn animate-pulse bg-gradient-to-r from-[#9945FF] to-[#14F195] hover:from-pink-500 hover:to-yellow-500 ..."
+                className="px-8 m-2 btn bg-gradient-to-r from-[#9945FF] to-[#14F195] hover:from-pink-500 hover:to-yellow-500 ..."
                 onClick={onClick}
             >
                 <span>initialize state</span>

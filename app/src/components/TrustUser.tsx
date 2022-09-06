@@ -1,5 +1,5 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { sendAndConfirmTransaction, Transaction, TransactionSignature } from '@solana/web3.js';
+import { Transaction, TransactionSignature, sendAndConfirmTransaction } from '@solana/web3.js';
 import { FC, useCallback } from 'react';
 import { notify } from "../utils/notifications";
 import useUserSOLBalanceStore from '../stores/useUserSOLBalanceStore';
@@ -9,13 +9,12 @@ import { Connection, PublicKey, clusterApiUrl } from '@solana/web3.js';
 import { Program, AnchorProvider, web3 } from '@project-serum/anchor';
 
 import idl from '../pages/idl.json'
-import { TOKEN_PROGRAM_ID } from '@project-serum/anchor/dist/cjs/utils/token';
 
-const { SystemProgram } = web3;
+const { SystemProgram, Keypair } = web3;
 
 const programID = new PublicKey(idl.metadata.address);
 
-export const Mint: FC = () => {
+export const TrustUser: FC = () => {
     const { connection } = useConnection();
     const wallet = useWallet();
     const { getUserSOLBalance } = useUserSOLBalanceStore();
@@ -32,60 +31,59 @@ export const Mint: FC = () => {
     };
 
     const onClick = useCallback(async () => {
+
         if (!wallet.publicKey) {
             console.log('error', 'Wallet not connected!');
             notify({ type: 'error', message: 'error', description: 'Wallet not connected!' });
             return;
         }
 
-
-        let pda = PublicKey.findProgramAddressSync(
-            [Buffer.from("ubi_info7"), wallet.publicKey.toBytes()],
-            programID
-        )
+        let signature: TransactionSignature = '';
 
         let provider = null
 
         try {
-            provider = getProvider()
-        } catch (error) { console.log(error) }
+            provider = getProvider() //checks & verify the dapp it can able to connect solana network
 
-        console.log("provider ", provider)
+            let pda = PublicKey.findProgramAddressSync(
+                [Buffer.from("ubi_info7"), wallet.publicKey.toBytes()],
+                programID
+            )
 
-        console.log("pda ", pda[0].toString())
+            console.log("provider ", provider)
 
-        let mint_signer = PublicKey.findProgramAddressSync(
-            [Buffer.from("minter")],
-            programID
-        )
+            console.log("pda ", pda[0].toString())
 
-        let signature: TransactionSignature = '';
-
-        try {
-
-            const program = new Program(idl, programID, provider)
+            const program = new Program(idl, programID, provider) //program will communicate to solana network via rpc using lib.json as model
             console.log(program);
 
             let transaction = new Transaction();
+            let trusteePK = prompt("Paste public key of user you wish to trust");
+
+            console.log("is on curve ", PublicKey.isOnCurve(trusteePK))
+
+            if (!PublicKey.isOnCurve(trusteePK)) {
+                notify({ type: 'error', message: "Invalid public key!"});
+                return;
+            }
+
+            let trusteeUbiInfo = PublicKey.findProgramAddressSync(
+                [Buffer.from("ubi_info7"), Buffer.from(trusteePK.toString())],
+                programID
+            )
 
             transaction.add(
-                await program.methods.mintToken().accounts({
-                    mintSigner: mint_signer[0],
-                    ubiMint: "2bH6Z8Apr5495DuuPXbmgSQ5du3vB5fNSarrPXy49gW7",
-                    userAuthority: wallet.publicKey,
-                    ubiTokenAccount: "huoyrEXK6woNowgjtYezPZDbrNcHZXjvfxX5BhpVDbs",
-                    ubiInfo: pda[0],
-                    state: "BfNHs2d373sCcxw5MjNmgLgQCEoFHM3Hv8XpEvqePLjD",
-                    tokenProgram: TOKEN_PROGRAM_ID,
-                    systemProgram: SystemProgram.programId,
-                    rent: web3.SYSVAR_RENT_PUBKEY,
+                await program.methods.trust().accounts({
+                    trusteeUbiInfo: trusteeUbiInfo[0],
+                    trusterUbiInfo: pda[0],
+                    trusterAuthority: wallet.publicKey
                 }).instruction()
             );
 
             signature = await wallet.sendTransaction(transaction, connection);
 
             await connection.confirmTransaction(signature);
-
+            
             console.log("Your transaction signature", signature.toString());
             notify({ type: 'success', message: 'Transaction successful!', txid: signature });
         } catch (error) {
@@ -101,7 +99,7 @@ export const Mint: FC = () => {
                 className="px-8 m-2 btn bg-gradient-to-r from-[#9945FF] to-[#14F195] hover:from-pink-500 hover:to-yellow-500 ..."
                 onClick={onClick}
             >
-                <span>mint</span>
+                <span>Trust a new user</span>
             </button>
         </div>
     );

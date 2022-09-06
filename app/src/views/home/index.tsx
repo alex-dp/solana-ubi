@@ -13,6 +13,7 @@ import useUserSOLBalanceStore from '../../stores/useUserSOLBalanceStore';
 import { InitializeAccount } from 'components/InitializeAccount';
 import { Mint } from 'components/Mint';
 import { InitializeState } from 'components/InitializeState'
+import { TrustUser } from 'components/TrustUser'
 
 export const HomeView: FC = ({ }) => {
   const wallet = useWallet();
@@ -36,7 +37,7 @@ export const HomeView: FC = ({ }) => {
           Solana UBI <span className='text-sm font-normal align-top text-slate-700'>v{pkg.version}</span>
         </h1>
         <h4 className="md:w-full text-center text-slate-300 my-2">
-          Start receiving UBI on Solana today
+          Universal Basic Income on Solana
         </h4>
         <div className="max-w-md mx-auto mockup-code bg-primary p-6 my-2">
           <pre data-prefix=">">
@@ -47,9 +48,11 @@ export const HomeView: FC = ({ }) => {
           <InitializeAccount />
           <Mint />
           <InitializeState/>
+          <TrustUser/>
+          </div>
           {/* {wallet.publicKey && <p>Public Key: {wallet.publicKey.toBase58()}</p>} */}
           {wallet && <p>SOL Balance: {(balance || 0).toLocaleString()}</p>}
-        </div>
+        
       </div>
     </div>
   );
