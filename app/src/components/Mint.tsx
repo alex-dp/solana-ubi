@@ -51,10 +51,6 @@ export const Mint: FC = () => {
             provider = getProvider()
         } catch (error) { console.log(error) }
 
-        console.log("provider ", provider)
-
-        console.log("pda ", pda[0].toString())
-
         let mint_signer = PublicKey.findProgramAddressSync(
             [Buffer.from("minter")],
             programID
@@ -71,7 +67,6 @@ export const Mint: FC = () => {
         try {
 
             const program = new Program(idl, programID, provider)
-            console.log(program);
 
             let transaction = new Transaction();
 
@@ -80,7 +75,7 @@ export const Mint: FC = () => {
                     mintSigner: mint_signer[0],
                     ubiMint: "2bH6Z8Apr5495DuuPXbmgSQ5du3vB5fNSarrPXy49gW7",
                     userAuthority: wallet.publicKey,
-                    ubiTokenAccount: ata[0],
+                    ubiTokenAccount: ata,
                     ubiInfo: pda[0],
                     state: "BfNHs2d373sCcxw5MjNmgLgQCEoFHM3Hv8XpEvqePLjD",
                     tokenProgram: TOKEN_PROGRAM_ID,
