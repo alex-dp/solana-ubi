@@ -51,8 +51,6 @@ export const InitializeAccount: FC = () => {
 
         let signature: TransactionSignature = '';
 
-        let provider = null
-
         try {
             let ata = await getAssociatedTokenAddress(
                 new PublicKey("2bH6Z8Apr5495DuuPXbmgSQ5du3vB5fNSarrPXy49gW7"), // mint
