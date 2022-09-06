@@ -8,7 +8,7 @@ import { Buffer } from 'buffer';
 import { Connection, PublicKey, clusterApiUrl } from '@solana/web3.js';
 import { Program, AnchorProvider, web3 } from '@project-serum/anchor';
 
-import idl from '../pages/idl.json'
+import idl from '../idl.json'
 
 const { SystemProgram, Keypair } = web3;
 
