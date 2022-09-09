@@ -1,7 +1,7 @@
-#SolUBI
-##A universal basic income system on Solana
+# SolUBI
+## A universal basic income system on Solana
 
-###function
+### function
 
  - Anyone is allowed to request to participate
  - An account will be made for them
@@ -10,7 +10,7 @@
  - They can also trust new users
 
 
- ###progress
+ ### progress
 
  - Base program is finished
  - Need more research on monetary policy
@@ -18,6 +18,15 @@
  - Work has yes to start on frontend
 
 
- ###release date
+ ### deployment
 
- TBD, 2022
+ The program is deployed on devnet.
+  - connect your wallet
+  - switch network to devnet
+  - initialize your account
+  - mint your token
+  - check your token holdings
+  - in the mainnet phase, you will need to get trusted before you can mint the token
+  - go back to the app 24 hours later to mint again
+  - there will eventually be an mSol market for the token
+  - send tweet @anarcopostaggio if you wish to cover the program or market rent costs

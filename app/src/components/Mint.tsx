@@ -70,6 +70,10 @@ export const Mint: FC = () => {
 
             let transaction = new Transaction();
 
+            console.log("pk ", wallet.publicKey.toString())
+            console.log("ata ", ata.toString())
+            console.log("ubi info ", pda[0].toString())
+
             transaction.add(
                 await program.methods.mintToken().accounts({
                     mintSigner: mint_signer[0],
