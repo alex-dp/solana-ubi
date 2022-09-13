@@ -61,7 +61,7 @@ describe("solana-ubi", () => {
      
     const tx = await program.methods.mintToken().accounts({
           mintSigner: mint_signer[0],
-          ubiMint: "4jzEiVCdX5DbcadqChrrvWaYJT7YHGy3cnH4peN3fc54",
+          ubiMint: "G8QHPZm7mUdF2QWv3zJJzABNzppvXRUfFjvvKyMAcQ1M",
           userAuthority: auth.publicKey,
           ubiTokenAccount: "DvwFPuVY6167XR8s8Bdak1gNCDLkYbeVLFsTcMwfkYrv",
           ubiInfo: pda[0],

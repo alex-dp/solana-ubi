@@ -53,7 +53,7 @@ export const InitializeAccount: FC = () => {
 
         try {
             let ata = await getAssociatedTokenAddress(
-                new PublicKey("2bH6Z8Apr5495DuuPXbmgSQ5du3vB5fNSarrPXy49gW7"), // mint
+                new PublicKey("G8QHPZm7mUdF2QWv3zJJzABNzppvXRUfFjvvKyMAcQ1M"), // mint
                 wallet.publicKey, // owner
                 false // allow owner off curve
             );
@@ -65,7 +65,7 @@ export const InitializeAccount: FC = () => {
                 wallet.publicKey, // payer
                 ata, // ata
                 wallet.publicKey, // owner
-                new PublicKey("2bH6Z8Apr5495DuuPXbmgSQ5du3vB5fNSarrPXy49gW7") // mint
+                new PublicKey("G8QHPZm7mUdF2QWv3zJJzABNzppvXRUfFjvvKyMAcQ1M") // mint
                 )
             );
 
