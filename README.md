@@ -20,7 +20,7 @@
 
  ### deployment
 
- The program is deployed on devnet.
+ The program is deployed on devnet. find frontend app here https://solana-ubi.vercel.app
   - connect your wallet
   - switch network to devnet
   - initialize your account
