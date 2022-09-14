@@ -40,7 +40,7 @@ export const HomeView: FC = ({ }) => {
         <h4 className="md:w-full text-center text-slate-300 my-2">
           Universal Basic Income on Solana
         </h4>
-        <div className="max-w-md mx-auto mockup-code bg-primary p-6 my-2">
+        <div className="max-w-screen mx-auto mockup-code bg-primary">
           <pre data-prefix=">">
             <code className="truncate">Initialize your account </code>
           </pre>

@@ -53,7 +53,7 @@ pub mod solana_ubi {
         let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts, signer);
         token::mint_to(cpi_ctx, amount)?;
         ubi_info.last_issuance = now_ts;
-        state.cap_left = cap_left - amount as u128;
+        state.cap_left = if amount as u128 > cap_left { 0 } else { cap_left - amount as u128};
         Ok(0)
     }
 
@@ -133,21 +133,21 @@ pub struct MintUBI<'info> {
 
 #[derive(Accounts)]
 pub struct TrustUser<'info> {
-    #[account(
-        mut,
-        constraint = trustee_ubi_info.is_trusted
-    )]
+    #[account(mut)]
     pub trustee_ubi_info: Account<'info, UBIInfo>,
     #[account(
         mut,
-        constraint = truster_ubi_info.authority == *truster_authority.key && Clock::get().unwrap().unix_timestamp.gt(&(truster_ubi_info.last_trust_given + 24 * 60 * 60))
+        constraint =
+                truster_ubi_info.authority == *truster_authority.key
+                && Clock::get().unwrap().unix_timestamp > truster_ubi_info.last_trust_given + 5 * 60
+                && truster_ubi_info.is_trusted
     )]
     pub truster_ubi_info: Account<'info, UBIInfo>,
     /// CHECK: x
     #[account(
         signer,
         mut,
-        constraint = truster_authority.key.as_ref() != trustee_ubi_info.authority.as_ref()
+        constraint = *truster_authority.key != trustee_ubi_info.authority
     )]
     pub truster_authority: AccountInfo<'info>,
 }

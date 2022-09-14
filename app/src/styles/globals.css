@@ -40,3 +40,7 @@ a {
     .width-20 {
       width: min-content;
     }
+
+    .max-w-screen {
+      max-width:90%;
+    }

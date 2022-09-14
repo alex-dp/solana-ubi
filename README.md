@@ -9,16 +9,7 @@
  - If their account is trusted, they can mint 9-decimal tokens at a (variable?) rate to their token account
  - They can also trust new users
 
-
- ### progress
-
- - Base program is finished
- - Need more research on monetary policy
- - Rate of issuance might go down exponentially
- - Work has yes to start on frontend
-
-
- ### deployment
+ ### progress/deployments
 
  The program is deployed on devnet. find frontend app here https://solana-ubi.vercel.app
   - connect your wallet
