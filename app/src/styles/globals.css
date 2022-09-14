@@ -24,3 +24,19 @@ a {
   background-color: #707070;
 }
 
+    .buttons { 
+      width: 100%;
+      table-layout: fixed;
+      border-collapse: collapse;
+      background-color: rgba(0, 0, 0, 0); 
+    }
+    .buttons button { 
+      width: 100%;
+    }
+
+    .max-width-200{
+      max-width: 200px;
+    }
+    .width-20 {
+      width: min-content;
+    }
