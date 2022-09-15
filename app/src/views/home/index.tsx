@@ -32,15 +32,15 @@ export const HomeView: FC = ({ }) => {
   return (
 
     <div className="md:hero mx-auto p-4">
-      
-      <div className="md:hero-content flex flex-col">
+
+      <div className="md:hero-content flex flex-col pad-r-12">
         <h1 className="text-center text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-tr from-[#9945FF] to-[#14F195]">
           Solana UBI
         </h1>
         <h4 className="md:w-full text-center text-slate-300 my-2">
           Universal Basic Income on Solana
         </h4>
-        <div className="max-w-screen mx-auto mockup-code bg-primary">
+        <div className="max-w-screen mx-auto mockup-code bg-primary pad-r-12">
           <pre data-prefix=">">
             <code className="truncate">Initialize your account </code>
           </pre>
@@ -53,20 +53,19 @@ export const HomeView: FC = ({ }) => {
           <pre data-prefix=">">
             <code className="truncate">Mint some UBI every 24 hours</code>
           </pre>
-        </div>        
-          <div className="text-center">
+        </div>
+        <div className="text-center">
           <table className="buttons">
- <tr>
-    
-            <InitializeAccount />
-          
-          <Mint />
-          <InitializeState/>
-          <TrustUser/>
-          </tr>
+            <tr>
+
+              <InitializeAccount />
+
+              <Mint />
+              <InitializeState />
+              <TrustUser />
+            </tr>
           </table>
-          </div>
-        
+        </div>
       </div>
     </div>
   );

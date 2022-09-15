@@ -44,3 +44,7 @@ a {
     .max-w-screen {
       max-width:90%;
     }
+
+    .pad-r-12 {
+      padding-right: 12px;
+    }
