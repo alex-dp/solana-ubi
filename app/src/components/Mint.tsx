@@ -57,7 +57,7 @@ export const Mint: FC = () => {
         )
 
         let ata = await getAssociatedTokenAddress(
-            new PublicKey("G8QHPZm7mUdF2QWv3zJJzABNzppvXRUfFjvvKyMAcQ1M"), // mint
+            new PublicKey("2LkCYPkW7zJu8w7Wa12ABgxcbzp8cH8siskPCjPLwV67"), // mint
             wallet.publicKey, // owner
             false // allow owner off curve
         );
@@ -77,7 +77,7 @@ export const Mint: FC = () => {
             transaction.add(
                 await program.methods.mintToken().accounts({
                     mintSigner: mint_signer[0],
-                    ubiMint: "G8QHPZm7mUdF2QWv3zJJzABNzppvXRUfFjvvKyMAcQ1M",
+                    ubiMint: "2LkCYPkW7zJu8w7Wa12ABgxcbzp8cH8siskPCjPLwV67",
                     userAuthority: wallet.publicKey,
                     ubiTokenAccount: ata,
                     ubiInfo: pda[0],
