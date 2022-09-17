@@ -52,3 +52,20 @@ a {
     .pad-r-12 {
       padding-right: 12px;
     }
+
+    .wrap{
+      position: relative;
+      width: max-content;
+      height: fit-content;
+      display: block;
+    }
+    .midImg{
+      margin: auto;  
+      position: relative;
+      left:0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      height: 150px;
+      width: 150px;
+    }  

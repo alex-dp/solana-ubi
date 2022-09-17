@@ -31,44 +31,46 @@ export const HomeView: FC = ({ }) => {
 
   return (
 
-    <div className="md:hero mx-auto p-4">
+    <div className="hero mx-auto p-4">
 
-      <div className="md:hero-content flex flex-col pad-r-12">
-      <img className="max-width-100" src="/cooler-light.svg"/>
-        <div className="text-center text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-tr from-[#c53fe9ff] to-[#e4d33aff]">
-          
-          <h1>Nuclear UBI</h1>
-        </div>
-        <h4 className="md:w-full text-center text-slate-300 my-2">
-          Universal Basic Income on Solana
-        </h4>
-        <div className="max-w-screen mx-auto mockup-code bg-primary pad-r-12">
-          <pre data-prefix=">">
-            <code className="truncate">Initialize your account </code>
-          </pre>
-          <pre data-prefix=">">
-            <code className="truncate">Use Discord or Telegram to find people</code>
-          </pre>
-          <pre data-prefix=">">
-            <code className="truncate">Ask them to trust your address</code>
-          </pre>
-          <pre data-prefix=">">
-            <code className="truncate">Mint some UBI every 24 hours</code>
-          </pre>
-        </div>
-        <div className="text-center">
-          <table className="buttons">
-            <tr>
+      <div className="hero-content flex flex-col">
+      <div className="wrap w-full text-center">
+        <img className="midImg" src="/cooler-light.svg"/>
+      </div>
+      <div className="text-center text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-tr from-[#c53fe9ff] to-[#e4d33aff]">
+      
+        <h1>Nuclear UBI</h1>
+      </div>
+      <h4 className="w-full text-center text-slate-300 my-2">
+        Universal Basic Income on Solana
+      </h4>
+      <div className="max-w-screen mx-auto mockup-code bg-primary pad-r-12">
+        <pre data-prefix=">">
+          <code className="truncate">Initialize your account </code>
+        </pre>
+        <pre data-prefix=">">
+          <code className="truncate">Use Discord or Telegram to find people</code>
+        </pre>
+        <pre data-prefix=">">
+          <code className="truncate">Ask them to trust your address</code>
+        </pre>
+        <pre data-prefix=">">
+          <code className="truncate">Mint some UBI every 24 hours</code>
+        </pre>
+      </div>
+      <div className="text-center">
+        <table className="buttons">
+          <tr>
 
-              <InitializeAccount />
+            <InitializeAccount />
 
-              <Mint />
-              <InitializeState />
-              <TrustUser />
-            </tr>
-          </table>
-        </div>
+            <Mint />
+            <InitializeState />
+            <TrustUser />
+          </tr>
+        </table>
       </div>
     </div>
+  </div>
   );
 };
