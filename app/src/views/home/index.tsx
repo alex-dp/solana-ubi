@@ -31,7 +31,7 @@ export const HomeView: FC = ({ }) => {
 
   return (
 
-    <div className="hero mx-auto p-4">
+    <div className="hero mx-auto">
 
       <div className="hero-content flex flex-col">
       <div className="wrap w-full text-center">
@@ -44,7 +44,7 @@ export const HomeView: FC = ({ }) => {
       <h4 className="w-full text-center text-slate-300 my-2">
         Universal Basic Income on Solana
       </h4>
-      <div className="max-w-screen mx-auto mockup-code bg-primary pad-r-12">
+      <div className="max-w-screen mx-auto mockup-code bg-primary">
         <pre data-prefix=">">
           <code className="truncate">Initialize your account </code>
         </pre>
