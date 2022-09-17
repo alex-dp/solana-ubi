@@ -110,7 +110,7 @@ export const Mint: FC = () => {
     return (
         <div>
             <button
-                className="px-8 m-2 btn bg-gradient-to-r from-[#9945FF] to-[#14F195] hover:from-pink-500 hover:to-yellow-500 max-width-200 width-20 ..."
+                className="px-8 m-2 btn bg-gradient-to-r from-[#c53fe9ff] to-[#e4d33aff] hover:from-pink-500 hover:to-yellow-500 max-width-200 width-20 ..."
                 onClick={onClick}
             >
                 <span>mint</span>

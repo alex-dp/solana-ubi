@@ -34,9 +34,11 @@ export const HomeView: FC = ({ }) => {
     <div className="md:hero mx-auto p-4">
 
       <div className="md:hero-content flex flex-col pad-r-12">
-        <h1 className="text-center text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-tr from-[#9945FF] to-[#14F195]">
-          Solana UBI
-        </h1>
+      <img className="max-width-100" src="/cooler-light.svg"/>
+        <div className="text-center text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-tr from-[#c53fe9ff] to-[#e4d33aff]">
+          
+          <h1>Nuclear UBI</h1>
+        </div>
         <h4 className="md:w-full text-center text-slate-300 my-2">
           Universal Basic Income on Solana
         </h4>

@@ -37,6 +37,10 @@ a {
     .max-width-200{
       max-width: 200px;
     }
+
+    .max-width-100{
+      max-width: 120px;
+    }
     .width-20 {
       width: min-content;
     }
