@@ -58,17 +58,18 @@ export const TrustUser: FC = () => {
             console.log(program);
 
             let transaction = new Transaction();
-            let trusteePK = prompt("Paste public key of user you wish to trust");
+            let trusteePKstr = prompt("Paste public key of user you wish to trust");
 
-            console.log("is on curve ", PublicKey.isOnCurve(trusteePK))
+            console.log("is on curve ", PublicKey.isOnCurve(trusteePKstr))
 
-            if (!PublicKey.isOnCurve(trusteePK)) {
+            if (!PublicKey.isOnCurve(trusteePKstr)) {
                 notify({ type: 'error', message: "Invalid public key!"});
                 return;
             }
+            let trusteePK = new PublicKey(trusteePKstr);
 
             let trusteeUbiInfo = PublicKey.findProgramAddressSync(
-                [Buffer.from("ubi_info7"), Buffer.from(trusteePK.toString())],
+                [Buffer.from("ubi_info7"), trusteePK.toBytes()],
                 programID
             )
 

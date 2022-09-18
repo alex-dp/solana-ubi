@@ -34,15 +34,21 @@ export const HomeView: FC = ({ }) => {
     <div className="md:hero mx-auto p-4">
 
       <div className="hero-content flex flex-col">
+
       <div className="wrap w-full">
+
+      <a href='https://nuclear-ubi.com'>
         <img className="max-width-100 midImg" src="/cooler-light.svg"/>
+        </a>
       </div>
       <div className="text-center text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-tr from-[#c53fe9ff] to-[#e4d33aff]">
       
-        <h1>Nuclear UBI</h1>
+        <h1>
+      <a href='https://nuclear-ubi.com'>Nuclear UBI</a></h1>
       </div>
       <h4 className="md:w-full text-center text-slate-300 my-2">
-        Universal Basic Income on Solana
+        
+      <a href='https://nuclear-ubi.com'>Universal Basic Income on Solana</a>
       </h4>
       <div className="max-w-screen mx-auto mockup-code bg-primary pad-r-12">
         <pre data-prefix=">">
