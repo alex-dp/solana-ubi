@@ -1,6 +1,6 @@
 import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
-import { SystemProgram, SYSVAR_RENT_PUBKEY } from "@solana/web3.js";
+import { PublicKey, SystemProgram, SYSVAR_RENT_PUBKEY } from "@solana/web3.js";
 import { SolanaUbi } from "../target/types/solana_ubi";
 
 
@@ -35,10 +35,19 @@ describe("solana-ubi", () => {
       program.programId
     )
 
+    let spk = new PublicKey("9BuWVRLgPHC1UMXzxkk3R88Ci3VVr66M6fki4fFSFEMV")
+
+    let strange = anchor.utils.publicKey.findProgramAddressSync(
+      ["ubi_info7", spk.toBytes()],
+      program.programId
+    )
+
   console.log("state pda", state_pda[0].toString(), "bump", state_pda[1])
   console.log("auth", auth.publicKey.toString())
   console.log("mint signer", mint_signer[0].toString())
   console.log("ubi info pda", pda[0].toString())
+
+  console.log("strange pda: ", strange[0].toString())
 
   it("Program state is initialized!", async () => {
     const tx = await program.methods.initializeMint().accounts({

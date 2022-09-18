@@ -55,7 +55,7 @@ export const HomeView: FC = ({ }) => {
           <code className="truncate">Initialize your account </code>
         </pre>
         <pre data-prefix=">">
-          <code className="truncate">Use Discord or Telegram to find people</code>
+          <code className="truncate">Use Discord to find people</code>
         </pre>
         <pre data-prefix=">">
           <code className="truncate">Ask them to trust your address</code>
