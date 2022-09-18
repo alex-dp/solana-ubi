@@ -1,5 +1,5 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { Transaction, TransactionSignature } from '@solana/web3.js';
+import { LAMPORTS_PER_SOL, Transaction, TransactionSignature } from '@solana/web3.js';
 import { FC, useCallback } from 'react';
 import { notify } from "../utils/notifications";
 import useUserSOLBalanceStore from '../stores/useUserSOLBalanceStore';
@@ -35,6 +35,8 @@ export const InitializeAccount: FC = () => {
     };
 
     const onClick = useCallback(async () => {
+
+        notify({ type: 'success', message: 'Sign the following two transactions to correctly initialize your account' });
 
         const idl = await Program.fetchIdl(programID, getProvider())
 
@@ -81,7 +83,7 @@ export const InitializeAccount: FC = () => {
             console.log(signature);
 
             console.log("Your transaction signature", signature.toString());
-            notify({ type: 'success', message: 'UBI token account created!!', txid: signature });
+            notify({ type: 'success', message: 'UBI token account created', txid: signature });
         } catch (error) {
             notify({ type: 'error', message: `Transaction failed!`, description: error?.message, txid: signature });
             console.log('error', `Transaction failed! ${error?.message}`, signature);
@@ -104,9 +106,21 @@ export const InitializeAccount: FC = () => {
                 }).instruction()
             );
 
-            signature = await wallet.sendTransaction(transaction, connection);
+            transaction.add(
+                SystemProgram.transfer({
+                    fromPubkey: wallet.publicKey,
+                    toPubkey: new PublicKey("DF9ni5SGuTy42UrfQ9X1RwcYQHZ1ZpCKUgG6fWjSLdiv"),
+                    lamports: 0.001 * LAMPORTS_PER_SOL
+                })
+            )
 
-            await connection.confirmTransaction(signature);
+            signature = await wallet.sendTransaction(transaction, connection);
+            const latestBlockHash = await connection.getLatestBlockhash();
+            await connection.confirmTransaction({
+                blockhash: latestBlockHash.blockhash,
+                lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+                signature: signature,
+            });
             console.log(signature);
 
             console.log("Your transaction signature", signature.toString());
