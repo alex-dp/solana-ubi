@@ -14,6 +14,7 @@ import {
   } from "@solana/spl-token";
 
 import idl from '../idl.json'
+import { UBIInfo } from 'models/types';
 
 const { SystemProgram } = web3;
 
@@ -36,8 +37,6 @@ export const InitializeAccount: FC = () => {
 
     const onClick = useCallback(async () => {
 
-        notify({ type: 'success', message: 'Sign the following two transactions to correctly initialize your account' });
-
         const idl = await Program.fetchIdl(programID, getProvider())
 
         if (!wallet.publicKey) {
@@ -46,10 +45,19 @@ export const InitializeAccount: FC = () => {
             return;
         }
 
+        notify({ type: 'success', message: 'Sign the following two transactions to correctly initialize your account' });
+
         let pda = PublicKey.findProgramAddressSync(
             [Buffer.from("ubi_info7"), wallet.publicKey.toBytes()],
             programID
         )
+
+
+        let info_raw = await connection.getAccountInfo(pda[0])
+        let info = new UBIInfo(info_raw.data)
+        console.log("full data ", info.getData())
+        console.log("IS TRUSTED??", info.getIsTrusted())
+        console.log("KEY TO BYTES", wallet.publicKey.toBytes())
 
         let signature: TransactionSignature = '';
 
@@ -124,7 +132,7 @@ export const InitializeAccount: FC = () => {
             console.log(signature);
 
             console.log("Your transaction signature", signature.toString());
-            notify({ type: 'success', message: 'UBI account created!!', txid: signature });
+            notify({ type: 'success', message: 'UBI data account created', txid: signature });
         } catch (error) {
             notify({ type: 'error', message: `Transaction failed!`, description: error?.message, txid: signature });
             console.log('error', `Transaction failed! ${error?.message}`, signature);

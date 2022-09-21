@@ -99,7 +99,7 @@ export const Mint: FC = () => {
             });
 
             console.log("Your transaction signature", signature.toString());
-            notify({ type: 'success', message: 'Transaction successful!', txid: signature });
+            notify({ type: 'success', message: 'You have successfully minted some NUBI. Come back in 24 hours!', txid: signature });
         } catch (error) {
             notify({ type: 'error', message: `Transaction failed!`, description: error?.message, txid: signature });
             console.log('error', `Transaction failed! ${error?.message}`, signature);

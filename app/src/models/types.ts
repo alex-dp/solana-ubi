@@ -1,8 +1,13 @@
 export type EndpointTypes = 'mainnet' | 'devnet' | 'localnet'
 export class UBIInfo {
-    data:number[];
-    constructor(data) {
+    data:Uint8Array;
+    constructor(data:Uint8Array) {
         this.data = data;
+        console.log(this.data)
+        while(this.data.at(this.data.length - 1) == 0){
+            this.data = this.data.slice(0, this.data.length - 2)
+        }
+        
     }
 
     // authority: Pubkey,
@@ -12,7 +17,15 @@ export class UBIInfo {
     // trusters: Vec<Pubkey>,
     // is_trusted: bool
 
+    getData() {
+        return this.data;
+    }
+
     getAuth() {
         return this.data.slice(1,1+32);
+    }
+
+    getIsTrusted() {
+        return new Boolean(this.data.at(this.data.length - 1))
     }
 }
