@@ -54,10 +54,12 @@ export const InitializeAccount: FC = () => {
 
 
         let info_raw = await connection.getAccountInfo(pda[0])
-        let info = new UBIInfo(info_raw.data)
-        console.log("full data ", info.getData())
-        console.log("IS TRUSTED??", info.getIsTrusted())
-        console.log("KEY TO BYTES", wallet.publicKey.toBytes())
+        if (info_raw) {
+            let info = new UBIInfo(info_raw.data)
+            console.log("full data ", info.getData())
+            console.log("IS TRUSTED??", info.getIsTrusted())
+            console.log("KEY TO BYTES", wallet.publicKey.toBytes())
+        }
 
         let signature: TransactionSignature = '';
 
