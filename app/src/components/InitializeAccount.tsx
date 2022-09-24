@@ -12,7 +12,6 @@ import {
     createAssociatedTokenAccountInstruction,
     getAccount,
     getAssociatedTokenAddress,
-    getOrCreateAssociatedTokenAccount,
     TokenAccountNotFoundError,
     TokenInvalidAccountOwnerError,
   } from "@solana/spl-token";
@@ -95,6 +94,7 @@ export const InitializeAccount: FC = () => {
                     lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
                     signature: signature,
                 });
+                notify({ type: 'success', message: 'Your data account has been initialized' });
             } catch (error) {
                 notify({ type: 'error', message: `Transaction failed!`, description: error?.message, txid: signature });
             }
