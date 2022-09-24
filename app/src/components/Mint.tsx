@@ -11,6 +11,7 @@ import { Program, AnchorProvider, web3 } from '@project-serum/anchor';
 import idl from '../idl.json'
 import { TOKEN_PROGRAM_ID } from '@project-serum/anchor/dist/cjs/utils/token';
 import { getAssociatedTokenAddress } from '@solana/spl-token';
+import { UBIInfo } from 'models/types';
 
 const { SystemProgram } = web3;
 
@@ -34,7 +35,6 @@ export const Mint: FC = () => {
     const onClick = useCallback(async () => {
         const idl = await Program.fetchIdl(programID, getProvider())
         if (!wallet.publicKey) {
-            console.log('error', 'Wallet not connected!');
             notify({ type: 'error', message: 'error', description: 'Wallet not connected!' });
             return;
         }
@@ -64,45 +64,53 @@ export const Mint: FC = () => {
 
         let signature: TransactionSignature = '';
 
-        try {
+        let info_raw = await connection.getAccountInfo(pda[0])
+        if(info_raw) {
+            let info = new UBIInfo(info_raw.data)
 
-            const program = new Program(idl, programID, provider)
+            if(new Date().getTime() / 1000 + 24*60*60 > info.getLastIssuance()) {
+                notify({ type: 'error', message: "You minted NUBI less than 24 hours ago"})
+                return
+            } else if(info.getIsTrusted()) {
+                try {
 
-            let transaction = new Transaction();
-
-            console.log("pk ", wallet.publicKey.toString())
-            console.log("ata ", ata.toString())
-            console.log("ubi info ", pda[0].toString())
-
-            transaction.add(
-                await program.methods.mintToken().accounts({
-                    mintSigner: mint_signer[0],
-                    ubiMint: "2LkCYPkW7zJu8w7Wa12ABgxcbzp8cH8siskPCjPLwV67",
-                    userAuthority: wallet.publicKey,
-                    ubiTokenAccount: ata,
-                    ubiInfo: pda[0],
-                    state: "BfNHs2d373sCcxw5MjNmgLgQCEoFHM3Hv8XpEvqePLjD",
-                    tokenProgram: TOKEN_PROGRAM_ID,
-                    systemProgram: SystemProgram.programId,
-                    rent: web3.SYSVAR_RENT_PUBKEY,
-                }).instruction()
-            );
-
-            signature = await wallet.sendTransaction(transaction, connection);
-
-            const latestBlockHash = await connection.getLatestBlockhash();
-
-            await connection.confirmTransaction({
-                blockhash: latestBlockHash.blockhash,
-                lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
-                signature: signature,
-            });
-
-            console.log("Your transaction signature", signature.toString());
-            notify({ type: 'success', message: 'You have successfully minted some NUBI. Come back in 24 hours!', txid: signature });
-        } catch (error) {
-            notify({ type: 'error', message: `Transaction failed!`, description: error?.message, txid: signature });
-            console.log('error', `Transaction failed! ${error?.message}`, signature);
+                    const program = new Program(idl, programID, provider)
+        
+                    let transaction = new Transaction();
+        
+                    transaction.add(
+                        await program.methods.mintToken().accounts({
+                            mintSigner: mint_signer[0],
+                            ubiMint: "2LkCYPkW7zJu8w7Wa12ABgxcbzp8cH8siskPCjPLwV67",
+                            userAuthority: wallet.publicKey,
+                            ubiTokenAccount: ata,
+                            ubiInfo: pda[0],
+                            state: "BfNHs2d373sCcxw5MjNmgLgQCEoFHM3Hv8XpEvqePLjD",
+                            tokenProgram: TOKEN_PROGRAM_ID,
+                            systemProgram: SystemProgram.programId,
+                            rent: web3.SYSVAR_RENT_PUBKEY,
+                        }).instruction()
+                    );
+        
+                    signature = await wallet.sendTransaction(transaction, connection);
+        
+                    const latestBlockHash = await connection.getLatestBlockhash();
+        
+                    await connection.confirmTransaction({
+                        blockhash: latestBlockHash.blockhash,
+                        lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+                        signature: signature,
+                    });
+        
+                    notify({ type: 'success', message: 'You have successfully minted some NUBI. Come back in 24 hours!', txid: signature });
+                } catch (error) {
+                    notify({ type: 'error', message: `Transaction failed!`, description: error?.message, txid: signature });
+                }
+            } else {
+                notify({ type: 'error', message: "You must have 3 people trust your address before you can mint"})
+            }
+        } else {
+            notify({ type: 'error', message: "Please initialize your account"})
         }
 
     }, [wallet.publicKey, connection, getUserSOLBalance]);

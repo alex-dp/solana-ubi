@@ -66,14 +66,12 @@ export const HomeView: FC = ({ }) => {
       </div>
       <div className="text-center">
         <table className="buttons">
-          <tr>
-
-            <InitializeAccount />
-
-            <Mint />
-            <InitializeState />
-            <TrustUser />
-          </tr>
+            <tbody>
+              <tr><InitializeAccount /></tr>
+              <tr><Mint /></tr>
+              <tr><InitializeState /></tr>
+              <tr><TrustUser /></tr>
+            </tbody>
         </table>
       </div>
     </div>

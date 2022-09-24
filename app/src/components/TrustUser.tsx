@@ -9,6 +9,7 @@ import { Connection, PublicKey, clusterApiUrl } from '@solana/web3.js';
 import { Program, AnchorProvider, web3 } from '@project-serum/anchor';
 
 import idl from '../idl.json'
+import { UBIInfo } from 'models/types';
 
 const { SystemProgram, Keypair } = web3;
 
@@ -33,7 +34,6 @@ export const TrustUser: FC = () => {
     const onClick = useCallback(async () => {
         const idl = await Program.fetchIdl(programID, getProvider())
         if (!wallet.publicKey) {
-            console.log('error', 'Wallet not connected!');
             notify({ type: 'error', message: 'error', description: 'Wallet not connected!' });
             return;
         }
@@ -42,60 +42,77 @@ export const TrustUser: FC = () => {
 
         let provider = null
 
-        try {
-            provider = getProvider() //checks & verify the dapp it can able to connect solana network
+        let pda = PublicKey.findProgramAddressSync(
+            [Buffer.from("ubi_info7"), wallet.publicKey.toBytes()],
+            programID
+        )
 
-            let pda = PublicKey.findProgramAddressSync(
-                [Buffer.from("ubi_info7"), wallet.publicKey.toBytes()],
-                programID
-            )
+        let info_raw = await connection.getAccountInfo(pda[0])
+        if(info_raw) {
+            let info = new UBIInfo(info_raw.data)
+            if(info.getIsTrusted()) {
+                try {
+                    provider = getProvider() //checks & verify the dapp it can able to connect solana network
+        
+                    const program = new Program(idl, programID, provider) //program will communicate to solana network via rpc using lib.json as model
+        
+                    let transaction = new Transaction();
+                    let trusteePKstr = prompt("Paste public key of user you wish to trust");
+        
+                    if (trusteePKstr.length != 44 || !PublicKey.isOnCurve(trusteePKstr)) {
+                        notify({ type: 'error', message: "Invalid public key!"});
+                        return;
+                    } else if (trusteePKstr == wallet.publicKey.toString()) {
+                        notify({ type: 'error', message: "You may not trust yourself"});
+                        return;
+                    }
+                    let trusteePK = new PublicKey(trusteePKstr);
 
-            console.log("provider ", provider)
-
-            console.log("pda ", pda[0].toString())
-
-            const program = new Program(idl, programID, provider) //program will communicate to solana network via rpc using lib.json as model
-            console.log(program);
-
-            let transaction = new Transaction();
-            let trusteePKstr = prompt("Paste public key of user you wish to trust");
-
-            console.log("is on curve ", PublicKey.isOnCurve(trusteePKstr))
-
-            if (!PublicKey.isOnCurve(trusteePKstr)) {
-                notify({ type: 'error', message: "Invalid public key!"});
-                return;
-            }
-            let trusteePK = new PublicKey(trusteePKstr);
-
-            let trusteeUbiInfo = PublicKey.findProgramAddressSync(
-                [Buffer.from("ubi_info7"), trusteePK.toBytes()],
-                programID
-            )
-
-            transaction.add(
-                await program.methods.trust().accounts({
-                    trusteeUbiInfo: trusteeUbiInfo[0],
-                    trusterUbiInfo: pda[0],
-                    trusterAuthority: wallet.publicKey
-                }).instruction()
-            );
-
-            signature = await wallet.sendTransaction(transaction, connection);
-
-            const latestBlockHash = await connection.getLatestBlockhash();
-
-            await connection.confirmTransaction({
-                blockhash: latestBlockHash.blockhash,
-                lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
-                signature: signature,
-            });
+                    let trusteePda = PublicKey.findProgramAddressSync(
+                        [Buffer.from("ubi_info7"), trusteePK.toBytes()],
+                        programID
+                    )
             
-            console.log("Your transaction signature", signature.toString());
-            notify({ type: 'success', message: 'Transaction successful!', txid: signature });
-        } catch (error) {
-            notify({ type: 'error', message: `Transaction failed!`, description: error?.message, txid: signature });
-            console.log('error', `Transaction failed! ${error?.message}`, signature);
+                    let trustee_info_raw = await connection.getAccountInfo(trusteePda[0])
+
+                    if(!trustee_info_raw) {
+                        notify({ type: 'error', message: "You are trying to trust an account which hasn't been initialized"});
+                        return;
+                    } else {
+                        let tee_info = new UBIInfo(trustee_info_raw.data)
+
+                        if (tee_info.getIsTrusted) {
+                            notify({ type: 'error', message: "You are trying to trust an account which already has trust"});
+                            return;
+                        }
+                    }
+        
+                    transaction.add(
+                        await program.methods.trust().accounts({
+                            trusteeUbiInfo: trusteePda[0],
+                            trusterUbiInfo: pda[0],
+                            trusterAuthority: wallet.publicKey
+                        }).instruction()
+                    );
+        
+                    signature = await wallet.sendTransaction(transaction, connection);
+        
+                    const latestBlockHash = await connection.getLatestBlockhash();
+        
+                    await connection.confirmTransaction({
+                        blockhash: latestBlockHash.blockhash,
+                        lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+                        signature: signature,
+                    });
+                    notify({ type: 'success', message: 'Transaction successful!', txid: signature });
+                } catch (error) {
+                    notify({ type: 'error', message: `Transaction failed!`, description: error?.message, txid: signature });
+                }
+            } else {
+                notify({ type: 'error', message: "You must be trusted in order to trust someone"})
+            }
+        } else {
+            notify({ type: 'error', message: "Please initialize your account"})
         }
 
     }, [wallet.publicKey, connection, getUserSOLBalance]);

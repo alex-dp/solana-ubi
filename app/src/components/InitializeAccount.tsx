@@ -10,7 +10,11 @@ import { Program, AnchorProvider, web3 } from '@project-serum/anchor';
 
 import {
     createAssociatedTokenAccountInstruction,
+    getAccount,
     getAssociatedTokenAddress,
+    getOrCreateAssociatedTokenAccount,
+    TokenAccountNotFoundError,
+    TokenInvalidAccountOwnerError,
   } from "@solana/spl-token";
 
 import idl from '../idl.json'
@@ -40,104 +44,97 @@ export const InitializeAccount: FC = () => {
         const idl = await Program.fetchIdl(programID, getProvider())
 
         if (!wallet.publicKey) {
-            console.log('error', 'Wallet not connected!');
             notify({ type: 'error', message: 'error', description: 'Wallet not connected!' });
             return;
         }
-
-        notify({ type: 'success', message: 'Sign the following two transactions to correctly initialize your account' });
 
         let pda = PublicKey.findProgramAddressSync(
             [Buffer.from("ubi_info7"), wallet.publicKey.toBytes()],
             programID
         )
 
-
         let info_raw = await connection.getAccountInfo(pda[0])
-        if (info_raw) {
-            let info = new UBIInfo(info_raw.data)
-            console.log("full data ", info.getData())
-            console.log("IS TRUSTED??", info.getIsTrusted())
-            console.log("KEY TO BYTES", wallet.publicKey.toBytes())
-        }
 
         let signature: TransactionSignature = '';
 
-        try {
-            let ata = await getAssociatedTokenAddress(
-                new PublicKey("2LkCYPkW7zJu8w7Wa12ABgxcbzp8cH8siskPCjPLwV67"), // mint
-                wallet.publicKey, // owner
-                false // allow owner off curve
-            );
-            console.log(`ata: ${ata.toBase58()}`);
-        
-            let tx = new Transaction();
-            tx.add(
-                createAssociatedTokenAccountInstruction(
-                wallet.publicKey, // payer
-                ata, // ata
-                wallet.publicKey, // owner
-                new PublicKey("2LkCYPkW7zJu8w7Wa12ABgxcbzp8cH8siskPCjPLwV67") // mint
+        let ata = await getAssociatedTokenAddress(
+            new PublicKey("2LkCYPkW7zJu8w7Wa12ABgxcbzp8cH8siskPCjPLwV67"), // mint
+            wallet.publicKey, // owner
+            false // allow owner off curve
+        );
+
+        if(!info_raw) {
+            try {
+
+                notify({ type: 'success', message: 'Sign this transaction to initialize your data account' });
+
+                const program = new Program(idl, programID, getProvider())
+
+                let transaction = new Transaction();
+
+                transaction.add(
+                    await program.methods.initializeAccount().accounts({
+                        ubiInfo: pda[0],
+                        userAuthority: wallet.publicKey,
+                        systemProgram: SystemProgram.programId
+                    }).instruction()
+                );
+
+                transaction.add(
+                    SystemProgram.transfer({
+                        fromPubkey: wallet.publicKey,
+                        toPubkey: new PublicKey("DF9ni5SGuTy42UrfQ9X1RwcYQHZ1ZpCKUgG6fWjSLdiv"),
+                        lamports: 0.001 * LAMPORTS_PER_SOL
+                    })
                 )
-            );
 
-            signature = await wallet.sendTransaction(tx, connection);
-
-            const latestBlockHash = await connection.getLatestBlockhash();
-
-            await connection.confirmTransaction({
-                blockhash: latestBlockHash.blockhash,
-                lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
-                signature: signature,
-            });
-            console.log(signature);
-
-            console.log("Your transaction signature", signature.toString());
-            notify({ type: 'success', message: 'UBI token account created', txid: signature });
-        } catch (error) {
-            notify({ type: 'error', message: `Transaction failed!`, description: error?.message, txid: signature });
-            console.log('error', `Transaction failed! ${error?.message}`, signature);
+                signature = await wallet.sendTransaction(transaction, connection);
+                const latestBlockHash = await connection.getLatestBlockhash();
+                await connection.confirmTransaction({
+                    blockhash: latestBlockHash.blockhash,
+                    lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+                    signature: signature,
+                });
+            } catch (error) {
+                notify({ type: 'error', message: `Transaction failed!`, description: error?.message, txid: signature });
+            }
         }
 
         try {
+            await getAccount(connection, ata);
+        } catch (error: unknown) {
+            if (error instanceof TokenAccountNotFoundError || error instanceof TokenInvalidAccountOwnerError) {
+                notify({ type: 'success', message: 'Sign this transaction to create a token account' });
+                try {                
+                    let tx = new Transaction();
+                    tx.add(
+                        createAssociatedTokenAccountInstruction(
+                        wallet.publicKey, // payer
+                        ata, // ata
+                        wallet.publicKey, // owner
+                        new PublicKey("2LkCYPkW7zJu8w7Wa12ABgxcbzp8cH8siskPCjPLwV67") // mint
+                        )
+                    );
+        
+                    signature = await wallet.sendTransaction(tx, connection);
+        
+                    const latestBlockHash = await connection.getLatestBlockhash();
+        
+                    await connection.confirmTransaction({
+                        blockhash: latestBlockHash.blockhash,
+                        lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+                        signature: signature,
+                    });
 
-            console.log("pda ", pda[0].toString())
-
-            const program = new Program(idl, programID, getProvider())
-            console.log(program);
-
-            let transaction = new Transaction();
-
-            transaction.add(
-                await program.methods.initializeAccount().accounts({
-                    ubiInfo: pda[0],
-                    userAuthority: wallet.publicKey,
-                    systemProgram: SystemProgram.programId
-                }).instruction()
-            );
-
-            transaction.add(
-                SystemProgram.transfer({
-                    fromPubkey: wallet.publicKey,
-                    toPubkey: new PublicKey("DF9ni5SGuTy42UrfQ9X1RwcYQHZ1ZpCKUgG6fWjSLdiv"),
-                    lamports: 0.001 * LAMPORTS_PER_SOL
-                })
-            )
-
-            signature = await wallet.sendTransaction(transaction, connection);
-            const latestBlockHash = await connection.getLatestBlockhash();
-            await connection.confirmTransaction({
-                blockhash: latestBlockHash.blockhash,
-                lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
-                signature: signature,
-            });
-            console.log(signature);
-
-            console.log("Your transaction signature", signature.toString());
-            notify({ type: 'success', message: 'UBI data account created', txid: signature });
-        } catch (error) {
-            notify({ type: 'error', message: `Transaction failed!`, description: error?.message, txid: signature });
-            console.log('error', `Transaction failed! ${error?.message}`, signature);
+                    notify({ type: 'success', message: 'Your token account has been initialized' });
+                } catch (error) {
+                    notify({ type: 'error', message: `Transaction failed!`, description: error?.message, txid: signature });
+                }
+            }
+        } finally {
+            if (info_raw) {
+                notify({ type: 'success', message: 'Your account is already initialized' });
+            }
         }
 
     }, [wallet.publicKey, connection, getUserSOLBalance]);
