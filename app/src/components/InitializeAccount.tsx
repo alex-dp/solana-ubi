@@ -93,8 +93,10 @@ export const InitializeAccount: FC = () => {
             }
         }
 
+        let a = null
+
         try {
-            await getAccount(connection, ata);
+            a = await getAccount(connection, ata);
         } catch (error: unknown) {
             if (error instanceof TokenAccountNotFoundError || error instanceof TokenInvalidAccountOwnerError) {
                 notify({ type: 'success', message: 'Sign this transaction to create a token account' });
@@ -125,7 +127,7 @@ export const InitializeAccount: FC = () => {
                 }
             }
         } finally {
-            if (info_raw) {
+            if (a && info_raw) {
                 notify({ type: 'success', message: 'Your account is already initialized' });
             }
         }

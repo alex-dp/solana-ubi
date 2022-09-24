@@ -7,11 +7,10 @@ import useUserSOLBalanceStore from '../stores/useUserSOLBalanceStore';
 import { Buffer } from 'buffer';
 import { Connection, PublicKey, clusterApiUrl } from '@solana/web3.js';
 import { Program, AnchorProvider, web3 } from '@project-serum/anchor';
+import { getDomainKey, NameRegistryState } from "@bonfida/spl-name-service";
 
 import idl from '../idl.json'
 import { UBIInfo } from 'models/types';
-
-const { SystemProgram, Keypair } = web3;
 
 const programID = new PublicKey(idl.metadata.address);
 
@@ -57,16 +56,31 @@ export const TrustUser: FC = () => {
                     const program = new Program(idl, programID, provider) //program will communicate to solana network via rpc using lib.json as model
         
                     let transaction = new Transaction();
-                    let trusteePKstr = prompt("Paste public key of user you wish to trust");
-        
-                    if (trusteePKstr.length != 44 || !PublicKey.isOnCurve(trusteePKstr)) {
+                    let trusteePKstr = prompt("Paste public key or SOL domain of user you wish to trust")
+                    console.log(trusteePKstr)
+                    let trusteePK : PublicKey = null
+                    if(trusteePKstr.toLowerCase().endsWith(".sol")){
+                        try {
+                            let pubkey = (await getDomainKey(trusteePKstr)).pubkey;
+                            console.log(pubkey.toString())
+                            trusteePK = (await NameRegistryState.retrieve(new Connection("https://api.mainnet-beta.solana.com"), pubkey)).registry.owner
+                            console.log(trusteePK.toString())
+                        } catch (e: any) {
+                            notify({ type: 'error', message: "Unable to resolve Sol domain"});
+                            console.log(e.message)
+                            return;
+                        }
+                    } else if (trusteePKstr.length != 44 || !PublicKey.isOnCurve(trusteePKstr)) {
                         notify({ type: 'error', message: "Invalid public key!"});
                         return;
-                    } else if (trusteePKstr == wallet.publicKey.toString()) {
+                    } else {
+                        trusteePK = new PublicKey(trusteePKstr);
+                    }
+
+                    if (trusteePK.toString() == wallet.publicKey.toString()) {
                         notify({ type: 'error', message: "You may not trust yourself"});
                         return;
                     }
-                    let trusteePK = new PublicKey(trusteePKstr);
 
                     let trusteePda = PublicKey.findProgramAddressSync(
                         [Buffer.from("ubi_info7"), trusteePK.toBytes()],
@@ -81,7 +95,7 @@ export const TrustUser: FC = () => {
                     } else {
                         let tee_info = new UBIInfo(trustee_info_raw.data)
 
-                        if (tee_info.getIsTrusted) {
+                        if (tee_info.getIsTrusted()) {
                             notify({ type: 'error', message: "You are trying to trust an account which already has trust"});
                             return;
                         }

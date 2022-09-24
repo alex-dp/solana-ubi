@@ -11,10 +11,6 @@ const PRODUCTION: bool = false;
 
 declare_id!("EcFTDXxknt3vRBi1pVZYN7SjZLcbHjJRAmCmjZ7Js3fd");
 
-//mint   4jzEiVCdX5DbcadqChrrvWaYJT7YHGy3cnH4peN3fc54
-//tokacc HfNY5k4T4xQVeYASUvDZE12MRyCj4hqGNJ6yuZGPshAx
-//pda    Bd4vag5JXn2RrGFw8VySP93QYouw5J8D3f1KCy3iUXRN
-
 pub fn rate(cap_left: u128) -> u64 {
     if cap_left == 0 { return 20_000_000_000 }
     // 1B    + 19B        e^ (c_left/c_i)
