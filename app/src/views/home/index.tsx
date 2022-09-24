@@ -61,7 +61,7 @@ export const HomeView: FC = ({ }) => {
           <code className="truncate">Ask them to trust your address</code>
         </pre>
         <pre data-prefix=">">
-          <code className="truncate">Mint some UBI every 24 hours</code>
+          <code className="truncate">Mint some NUBI every 24 hours</code>
         </pre>
       </div>
       <div className="text-center">

@@ -68,7 +68,7 @@ export const Mint: FC = () => {
         if(info_raw) {
             let info = new UBIInfo(info_raw.data)
 
-            if(new Date().getTime() / 1000 + 24*60*60 > info.getLastIssuance()) {
+            if(new Date().getTime() / 1000 < info.getLastIssuance() + 24*3600) {
                 notify({ type: 'error', message: "You minted NUBI less than 24 hours ago"})
                 return
             } else if(info.getIsTrusted()) {
