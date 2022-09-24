@@ -75,4 +75,8 @@ a {
       bottom: 0;
       height: 150px;
       width: 150px;
-    }  
+    }
+
+    .bg-blk {
+      background-color: #202020;
+    }
