@@ -24,6 +24,7 @@ pub fn rate(cap_left: u128) -> u64 {
 
 #[program]
 pub mod solana_ubi {
+    use anchor_lang::solana_program::native_token::LAMPORTS_PER_SOL;
     use super::*;
 
     pub fn mint_token(
@@ -80,6 +81,20 @@ pub mod solana_ubi {
         acc.last_trust_given = now_ts - 24 * 60 * 60;
         acc.is_trusted = !PRODUCTION;
         acc.last_issuance = now_ts - 24 * 60 * 60;
+
+        let ix = anchor_lang::solana_program::system_instruction::transfer(
+            &ctx.accounts.user_authority.key(),
+            &ctx.accounts.platform_fee_account.key(),
+            (0.001 * LAMPORTS_PER_SOL as f32) as u64,
+        );
+
+        let _ = anchor_lang::solana_program::program::invoke(
+            &ix,
+            &[
+                ctx.accounts.user_authority.to_account_info(),
+                ctx.accounts.platform_fee_account.to_account_info(),
+            ],
+        );
 
         Ok(0)
     }
@@ -168,6 +183,9 @@ pub struct InitializeAccount<'info> {
     /// CHECK: x
     #[account(signer, mut)]
     pub user_authority: AccountInfo<'info>,
+    /// CHECK: x
+    #[account(mut, constraint=platform_fee_account.key.to_string() == "DF9ni5SGuTy42UrfQ9X1RwcYQHZ1ZpCKUgG6fWjSLdiv")]
+    pub platform_fee_account: AccountInfo<'info>,
 
     pub system_program: Program<'info, System>,
 }

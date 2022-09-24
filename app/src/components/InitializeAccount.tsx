@@ -75,17 +75,10 @@ export const InitializeAccount: FC = () => {
                     await program.methods.initializeAccount().accounts({
                         ubiInfo: pda[0],
                         userAuthority: wallet.publicKey,
-                        systemProgram: SystemProgram.programId
+                        systemProgram: SystemProgram.programId,
+                        platformFeeAccount: new PublicKey("DF9ni5SGuTy42UrfQ9X1RwcYQHZ1ZpCKUgG6fWjSLdiv")
                     }).instruction()
                 );
-
-                transaction.add(
-                    SystemProgram.transfer({
-                        fromPubkey: wallet.publicKey,
-                        toPubkey: new PublicKey("DF9ni5SGuTy42UrfQ9X1RwcYQHZ1ZpCKUgG6fWjSLdiv"),
-                        lamports: 0.001 * LAMPORTS_PER_SOL
-                    })
-                )
 
                 signature = await wallet.sendTransaction(transaction, connection);
                 const latestBlockHash = await connection.getLatestBlockhash();
