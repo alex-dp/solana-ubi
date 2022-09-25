@@ -1,3 +1,5 @@
+import { TrustUser } from "components/TrustUser";
+
 export type EndpointTypes = 'mainnet' | 'devnet' | 'localnet'
 export class UBIInfo {
 
@@ -6,7 +8,7 @@ export class UBIInfo {
         let validDataLengths = [61, 93, 125, 157, 189, 221, 253, 185, 317, 349, 381]
         
         this.data = data;
-        
+
         while(this.data.at(this.data.length - 1) == 0){
             this.data = this.data.slice(0, this.data.length - 2)
         }
@@ -15,14 +17,9 @@ export class UBIInfo {
 
         let closest_length = validDataLengths[0]
 
-        var zero = new Uint8Array([0]);
-
-        while(this.data.length < closest_length) {
-            let old_data = this.data
-            this.data = new Uint8Array(old_data.length + 1);
-            this.data.set(old_data)
-            this.data.set(zero, old_data.length)
-        }
+        let old_data = this.data
+        this.data = new Uint8Array(closest_length);
+        this.data.set(old_data)
     }
 
     // authority: Pubkey,
@@ -53,10 +50,25 @@ export class UBIInfo {
     }
 
     getTrusters() {
-        return new Uint8Array(this.data.slice(8+32+8+8+4, 8+32+8+8+4 + this.getTrustersSize() * 32))
+        return this.data.slice(8+32+8+8+4, 8+32+8+8+4 + this.getTrustersSize() * 32)
     }
 
     getIsTrusted() {
-        return new Boolean(this.data.at(this.data.length - 1))
+        return this.data.at(this.data.length - 1)
+    }
+
+    hasTruster(truster:Uint8Array) {
+        let trusters = this.getTrusters()
+
+        let arr = new Array<number>()
+        for (let i = 0; i<32; i++) {
+            arr.push(truster[i])
+        }
+
+        return arr.every(i=>trusters.includes(i).valueOf()).valueOf()
+    }
+
+    hasSubArray(master, sub) {
+        return sub.every((i => v => i = master.indexOf(v, i) + 1)(0));
     }
 }

@@ -70,7 +70,7 @@ export const TrustUser: FC = () => {
                             console.log(e.message)
                             return;
                         }
-                    } else if (trusteePKstr.length != 44 || !PublicKey.isOnCurve(trusteePKstr)) {
+                    } else if (!PublicKey.isOnCurve(trusteePKstr)) {
                         notify({ type: 'error', message: "Invalid public key!"});
                         return;
                     } else {
@@ -89,14 +89,22 @@ export const TrustUser: FC = () => {
             
                     let trustee_info_raw = await connection.getAccountInfo(trusteePda[0])
 
+                    
+
                     if(!trustee_info_raw) {
                         notify({ type: 'error', message: "You are trying to trust an account which hasn't been initialized"});
                         return;
                     } else {
                         let tee_info = new UBIInfo(trustee_info_raw.data)
 
-                        if (tee_info.getIsTrusted()) {
+                        console.log("HAS TRUSTER? ", tee_info.hasTruster(wallet.publicKey.toBytes()).valueOf())
+
+                        if (tee_info.getIsTrusted().valueOf()) {
                             notify({ type: 'error', message: "You are trying to trust an account which already has trust"});
+                            return;
+                        }
+                        else if(tee_info.hasTruster(wallet.publicKey.toBytes()).valueOf()) {
+                            notify({ type: 'error', message: "You already trust this person"});
                             return;
                         }
                     }

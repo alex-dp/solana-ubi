@@ -7,7 +7,7 @@ const UBI_INFO: &str = "ubi_info7";
 const STATE: &str = "state1";
 const TRUST_COEFF: u8 = 3;
 const INITIAL_CAP: u128 = 20__000_000_000__000_000_000;
-const PRODUCTION: bool = false;
+const PRODUCTION: bool = true;
 
 declare_id!("EcFTDXxknt3vRBi1pVZYN7SjZLcbHjJRAmCmjZ7Js3fd");
 
@@ -65,6 +65,7 @@ pub mod solana_ubi {
             trustee.is_trusted = true;
         }
         truster.last_trust_given = Clock::get().unwrap().unix_timestamp;
+
         Ok(0)
     }
 
@@ -155,6 +156,7 @@ pub struct TrustUser<'info> {
                 truster_ubi_info.authority == *truster_authority.key
                 && Clock::get().unwrap().unix_timestamp > truster_ubi_info.last_trust_given + 5 * 60
                 && truster_ubi_info.is_trusted
+                && !trustee_ubi_info.trusters.contains(truster_authority.key)
     )]
     pub truster_ubi_info: Account<'info, UBIInfo>,
     /// CHECK: x
