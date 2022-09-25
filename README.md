@@ -11,13 +11,13 @@
 
  ### progress/deployments
 
- The program is deployed on devnet. find frontend app here https://nuclear-ubi.com
+ The program is deployed on mainnet. find frontend app here https://nuclear-ubi.com
   - connect your wallet
-  - switch network to devnet
+  - make sure you're on mainnet and have SOL
   - initialize your account
+  - get trusted
   - mint your token
   - check your token holdings
-  - in the mainnet phase, you will need to get trusted before you can mint the token
   - go back to the app 24 hours later to mint again
   - there will eventually be an mSol market for the token
   - send tweet @anarcopostaggio if you wish to cover the program or market rent costs

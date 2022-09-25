@@ -57,7 +57,7 @@ export const TrustUser: FC = () => {
         
                     let transaction = new Transaction();
                     let trusteePKstr = prompt("Paste public key or SOL domain of user you wish to trust")
-                    console.log(trusteePKstr)
+                    if (!trusteePKstr) return
                     let trusteePK : PublicKey = null
                     if(trusteePKstr.toLowerCase().endsWith(".sol")){
                         try {
@@ -97,14 +97,16 @@ export const TrustUser: FC = () => {
                     } else {
                         let tee_info = new UBIInfo(trustee_info_raw.data)
 
-                        console.log("HAS TRUSTER? ", tee_info.hasTruster(wallet.publicKey.toBytes()).valueOf())
-
                         if (tee_info.getIsTrusted().valueOf()) {
-                            notify({ type: 'error', message: "You are trying to trust an account which already has trust"});
+                            notify({ type: 'info', message: "This account already has trust"});
                             return;
                         }
                         else if(tee_info.hasTruster(wallet.publicKey.toBytes()).valueOf()) {
-                            notify({ type: 'error', message: "You already trust this person"});
+                            notify({ type: 'info', message: "You can only trust someone once"});
+                            return;
+                        }
+                        else if(info.getLastTrustGiven() + 5*60 > new Date().getTime() / 1000) {
+                            notify({ type: 'erro', message: "You trusted someone too recently. Try again in 5 minutes"});
                             return;
                         }
                     }

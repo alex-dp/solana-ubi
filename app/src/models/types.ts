@@ -83,8 +83,4 @@ export class UBIInfo {
 
         return arr.every(i=>trusters.includes(i).valueOf()).valueOf()
     }
-
-    hasSubArray(master, sub) {
-        return sub.every((i => v => i = master.indexOf(v, i) + 1)(0));
-    }
 }
