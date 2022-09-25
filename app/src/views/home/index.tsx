@@ -48,6 +48,9 @@ export const HomeView: FC = ({ }) => {
       <h4 className="md:w-full text-center text-slate-300 my-2">
         
       <a href='https://nuclear-ubi.com'>Universal Basic Income on Solana</a>
+      <div className="text-center font-bold text-transparent bg-clip-text bg-gradient-to-tr from-[#c53fe9ff] to-[#e4d33aff]">
+        Now on mainnet
+      </div>
       </h4>
       <div className="max-w-screen mx-auto mockup-code bg-primary pad-r-12">
         <pre data-prefix=">">
