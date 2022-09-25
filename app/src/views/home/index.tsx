@@ -12,7 +12,6 @@ import pkg from '../../../package.json';
 import useUserSOLBalanceStore from '../../stores/useUserSOLBalanceStore';
 import { InitializeAccount } from 'components/InitializeAccount';
 import { Mint } from 'components/Mint';
-import { InitializeState } from 'components/InitializeState'
 import { TrustUser } from 'components/TrustUser'
 
 export const HomeView: FC = ({ }) => {
@@ -69,7 +68,6 @@ export const HomeView: FC = ({ }) => {
             <tbody>
               <tr><InitializeAccount /></tr>
               <tr><Mint /></tr>
-              <tr><InitializeState /></tr>
               <tr><TrustUser /></tr>
             </tbody>
         </table>

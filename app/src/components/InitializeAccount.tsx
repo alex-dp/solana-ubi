@@ -17,7 +17,7 @@ import {
   } from "@solana/spl-token";
 
 import idl from '../idl.json'
-import { UBIInfo } from 'models/types';
+import { getMint, UBIInfo } from 'models/types';
 
 const { SystemProgram } = web3;
 
@@ -25,11 +25,12 @@ const programID = new PublicKey(idl.metadata.address);
 
 export const InitializeAccount: FC = () => {
     const { connection } = useConnection();
+    const moniker = connection.rpcEndpoint.includes("mainnet") ? "mainnet-beta" : "devnet"
     const wallet = useWallet()
     const { getUserSOLBalance } = useUserSOLBalanceStore();
 
     const getProvider = () => {
-        const connection = new Connection("https://api.devnet.solana.com");
+        const connection = new Connection("https://api."+moniker+".solana.com");
         const provider = new AnchorProvider(
             connection,
             wallet,
@@ -57,7 +58,7 @@ export const InitializeAccount: FC = () => {
         let signature: TransactionSignature = '';
 
         let ata = await getAssociatedTokenAddress(
-            new PublicKey("2LkCYPkW7zJu8w7Wa12ABgxcbzp8cH8siskPCjPLwV67"), // mint
+            new PublicKey(getMint(moniker)), // mint
             wallet.publicKey, // owner
             false // allow owner off curve
         );
@@ -107,7 +108,7 @@ export const InitializeAccount: FC = () => {
                         wallet.publicKey, // payer
                         ata, // ata
                         wallet.publicKey, // owner
-                        new PublicKey("2LkCYPkW7zJu8w7Wa12ABgxcbzp8cH8siskPCjPLwV67") // mint
+                        new PublicKey(getMint(moniker)) // mint
                         )
                     );
         

@@ -11,7 +11,7 @@ import { Program, AnchorProvider, web3 } from '@project-serum/anchor';
 import idl from '../idl.json'
 import { TOKEN_PROGRAM_ID } from '@project-serum/anchor/dist/cjs/utils/token';
 import { getAssociatedTokenAddress } from '@solana/spl-token';
-import { UBIInfo } from 'models/types';
+import { UBIInfo, getMint } from 'models/types';
 
 const { SystemProgram } = web3;
 
@@ -19,11 +19,12 @@ const programID = new PublicKey(idl.metadata.address);
 
 export const Mint: FC = () => {
     const { connection } = useConnection();
+    const moniker = connection.rpcEndpoint.includes("mainnet") ? "mainnet-beta" : "devnet"
     const wallet = useWallet();
     const { getUserSOLBalance } = useUserSOLBalanceStore();
 
     const getProvider = () => {
-        const connection = new Connection("https://api.devnet.solana.com");
+        const connection = new Connection("https://api."+moniker+".solana.com");
         const provider = new AnchorProvider(
             connection,
             wallet,
@@ -33,7 +34,8 @@ export const Mint: FC = () => {
     };
 
     const onClick = useCallback(async () => {
-        const idl = await Program.fetchIdl(programID, getProvider())
+        let idl = await Program.fetchIdl(programID, getProvider())
+        console.log(idl)
         if (!wallet.publicKey) {
             notify({ type: 'error', message: 'error', description: 'Wallet not connected!' });
             return;
@@ -45,7 +47,7 @@ export const Mint: FC = () => {
             programID
         )
 
-        let provider = null
+        let provider:AnchorProvider = null
 
         try {
             provider = getProvider()
@@ -57,7 +59,7 @@ export const Mint: FC = () => {
         )
 
         let ata = await getAssociatedTokenAddress(
-            new PublicKey("2LkCYPkW7zJu8w7Wa12ABgxcbzp8cH8siskPCjPLwV67"), // mint
+            new PublicKey(getMint(moniker)), // mint
             wallet.publicKey, // owner
             false // allow owner off curve
         );
@@ -68,7 +70,7 @@ export const Mint: FC = () => {
         if(info_raw) {
             let info = new UBIInfo(info_raw.data)
 
-            console.log("is trusted? ", info.getIsTrusted().valueOf())
+            console.log("info ", info)
             if(!info.getIsTrusted().valueOf()) {
                 notify({ type: 'error', message: "Need 3 trusters in order to mint"})
                 return
@@ -85,7 +87,7 @@ export const Mint: FC = () => {
                     transaction.add(
                         await program.methods.mintToken().accounts({
                             mintSigner: mint_signer[0],
-                            ubiMint: "2LkCYPkW7zJu8w7Wa12ABgxcbzp8cH8siskPCjPLwV67",
+                            ubiMint: getMint(moniker),
                             userAuthority: wallet.publicKey,
                             ubiTokenAccount: ata,
                             ubiInfo: pda[0],

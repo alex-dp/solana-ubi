@@ -5,9 +5,9 @@ use anchor_spl::token::{self, Mint, MintTo, TokenAccount};
 const MINTER: &str = "minter";
 const UBI_INFO: &str = "ubi_info7";
 const STATE: &str = "state1";
-const TRUST_COEFF: u8 = 3;
+const TRUST_COEFF: u8 = 1;
 const INITIAL_CAP: u128 = 20__000_000_000__000_000_000;
-const PRODUCTION: bool = true;
+const PRODUCTION: bool = false;
 
 declare_id!("EcFTDXxknt3vRBi1pVZYN7SjZLcbHjJRAmCmjZ7Js3fd");
 

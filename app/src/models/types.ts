@@ -1,9 +1,21 @@
-import { TrustUser } from "components/TrustUser";
+import { PublicKey } from "@solana/web3.js";
 
 export type EndpointTypes = 'mainnet' | 'devnet' | 'localnet'
+export function getMint(network) {
+    switch (network) {
+        case "mainnet":
+        case "mainnet-beta":
+            return "4HgYp2eiokKcqe5AVAxpwCsfUE5pwCNTiPXvpSxYnDi6";
+        case "devnet":
+            return "2LkCYPkW7zJu8w7Wa12ABgxcbzp8cH8siskPCjPLwV67";
+    }
+}
 export class UBIInfo {
 
     data:Uint8Array;
+    isTrusted:boolean;
+    auth:PublicKey;
+    lastIssuance:Date;
     constructor(data:Uint8Array) {
         let validDataLengths = [61, 93, 125, 157, 189, 221, 253, 185, 317, 349, 381]
         
@@ -20,6 +32,10 @@ export class UBIInfo {
         let old_data = this.data
         this.data = new Uint8Array(closest_length);
         this.data.set(old_data)
+
+        this.isTrusted = this.getIsTrusted().valueOf()
+        this.auth = new PublicKey(this.getAuth())
+        this.lastIssuance = new Date(this.getLastIssuance().valueOf() * 1000)
     }
 
     // authority: Pubkey,
@@ -54,7 +70,7 @@ export class UBIInfo {
     }
 
     getIsTrusted() {
-        return this.data.at(this.data.length - 1)
+        return this.data.at(this.data.length - 1) != 0
     }
 
     hasTruster(truster:Uint8Array) {

@@ -21,7 +21,7 @@ export const TrustUser: FC = () => {
 
     const getProvider = () => {
         //Creating a provider, the provider is authenication connection to solana
-        const connection = new Connection("https://api.devnet.solana.com");
+        const connection = new Connection("https://api.mainnet-beta.solana.com");
         const provider = new AnchorProvider(
             connection,
             wallet,
