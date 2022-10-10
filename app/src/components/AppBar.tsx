@@ -3,6 +3,7 @@ import { FC } from 'react';
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useAutoConnect } from '../contexts/AutoConnectProvider';
 import NetworkSwitcher from './NetworkSwitcher';
+import LangSwitch from './LangSwitch';
 
 export const AppBar: FC = props => {
   const { autoConnect, setAutoConnect } = useAutoConnect();
@@ -36,6 +37,7 @@ export const AppBar: FC = props => {
                   </label>
 
                   <NetworkSwitcher />
+                  <LangSwitch/>
                 </div>
               </li>
             </ul>
