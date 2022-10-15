@@ -63,10 +63,11 @@ export const InitializeAccount: FC = () => {
             false // allow owner off curve
         );
 
+        let txs: Transaction[] = []
+        let latest = await connection.getLatestBlockhash()
+
         if(!info_raw) {
             try {
-
-                notify({ type: 'success', message: 'Sign this transaction to initialize your data account' });
 
                 const program = new Program(idl, programID, getProvider())
 
@@ -80,15 +81,10 @@ export const InitializeAccount: FC = () => {
                         platformFeeAccount: new PublicKey("DF9ni5SGuTy42UrfQ9X1RwcYQHZ1ZpCKUgG6fWjSLdiv")
                     }).instruction()
                 );
+                transaction.recentBlockhash = latest.blockhash;
+                transaction.feePayer = wallet.publicKey
 
-                signature = await wallet.sendTransaction(transaction, connection);
-                const latestBlockHash = await connection.getLatestBlockhash();
-                await connection.confirmTransaction({
-                    blockhash: latestBlockHash.blockhash,
-                    lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
-                    signature: signature,
-                });
-                notify({ type: 'success', message: 'Your data account has been initialized' });
+                txs.push(transaction)
             } catch (error) {
                 notify({ type: 'error', message: `Transaction failed!`, description: error?.message, txid: signature });
             }
@@ -100,7 +96,6 @@ export const InitializeAccount: FC = () => {
             a = await getAccount(connection, ata);
         } catch (error: unknown) {
             if (error instanceof TokenAccountNotFoundError || error instanceof TokenInvalidAccountOwnerError) {
-                notify({ type: 'success', message: 'Sign this transaction to create a token account' });
                 try {                
                     let tx = new Transaction();
                     tx.add(
@@ -111,18 +106,10 @@ export const InitializeAccount: FC = () => {
                         new PublicKey(getMint(moniker)) // mint
                         )
                     );
-        
-                    signature = await wallet.sendTransaction(tx, connection);
-        
-                    const latestBlockHash = await connection.getLatestBlockhash();
-        
-                    await connection.confirmTransaction({
-                        blockhash: latestBlockHash.blockhash,
-                        lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
-                        signature: signature,
-                    });
+                    tx.recentBlockhash = latest.blockhash;
+                    tx.feePayer = wallet.publicKey
 
-                    notify({ type: 'success', message: 'Your token account has been initialized' });
+                    txs.push(tx);
                 } catch (error) {
                     notify({ type: 'error', message: `Transaction failed!`, description: error?.message, txid: signature });
                 }
@@ -131,6 +118,20 @@ export const InitializeAccount: FC = () => {
             if (a && info_raw) {
                 notify({ type: 'success', message: 'Your account is already initialized' });
             }
+        }
+
+        if(txs.length != 0) {
+            notify({ type: 'info', message: 'Sign ' + txs.length + " transaction" + (txs.length != 1 ? "s":'') });
+            try {
+                let signedTxs = await wallet.signAllTransactions(txs)
+                signedTxs.forEach(element => {
+                    connection.sendRawTransaction(element.serialize())
+                });
+                notify({ type: 'success', message: 'Your account has been initialized' });
+            } catch (error) {
+                notify({ type: 'error', message: error?.message });
+            }
+            
         }
 
     }, [wallet.publicKey, connection, getUserSOLBalance]);
