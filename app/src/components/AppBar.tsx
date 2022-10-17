@@ -11,7 +11,7 @@ export const AppBar: FC = props => {
     <div>
 
       {/* NavBar / Header */}
-      <div className="navbar flex flex-row md:mb-2 shadow-lg bg-neutral text-neutral-content">
+      <div className="navbar flex flex-row md:mb-2 shadow-lg bg-dark-blue text-neutral-content">
         <div className="navbar-start">
           <label className="btn-square"/>
         </div>

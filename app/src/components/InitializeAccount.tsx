@@ -139,7 +139,7 @@ export const InitializeAccount: FC = () => {
     return (
         <div>
             <button
-                className="px-8 m-2 btn bg-gradient-to-r from-[#c53fe9ff] to-[#e4d33aff] hover:from-pink-500 hover:to-yellow-500 max-width-200 width-20..."
+                className="px-8 m-2 btn bg-gradient-to-r from-[#c53fe9ff] to-[#e4d33aff] hover:from-[#131825] hover:to-[#131825] max-width-200 width-20..."
                 onClick={onClick}
             >
                 <span>initialize</span>
