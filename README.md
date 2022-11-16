@@ -20,5 +20,4 @@
   - mint your token
   - check your token holdings
   - go back to the app 24 hours later to mint again
-  - there will eventually be an mSol market for the token
-  - send tweet @anarcopostaggio if you wish to cover the program or market rent costs
+  - there are a serum market and a raydium pool (NUBI-SOL)
