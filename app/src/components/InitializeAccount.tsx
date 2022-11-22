@@ -1,5 +1,5 @@
-import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { LAMPORTS_PER_SOL, Transaction, TransactionSignature } from '@solana/web3.js';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { Transaction, TransactionSignature } from '@solana/web3.js';
 import { FC, useCallback } from 'react';
 import { notify } from "../utils/notifications";
 import useUserSOLBalanceStore from '../stores/useUserSOLBalanceStore';
@@ -17,20 +17,19 @@ import {
   } from "@solana/spl-token";
 
 import idl from '../idl.json'
-import { getMint, UBIInfo } from 'models/types';
+import { getMint } from 'models/types';
 
 const { SystemProgram } = web3;
 
 const programID = new PublicKey(idl.metadata.address);
 
 export const InitializeAccount: FC = () => {
-    const { connection } = useConnection();
+    const connection = new Connection("https://palpable-sparkling-gadget.solana-mainnet.discover.quiknode.pro/781b15636590ca9a832e3f1fbe4c7ff84791de75/");
     const moniker = connection.rpcEndpoint.includes("mainnet") ? "mainnet-beta" : "devnet"
     const wallet = useWallet()
     const { getUserSOLBalance } = useUserSOLBalanceStore();
 
     const getProvider = () => {
-        const connection = new Connection("https://api."+moniker+".solana.com");
         const provider = new AnchorProvider(
             connection,
             wallet,

@@ -1,11 +1,11 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { sendAndConfirmTransaction, Transaction, TransactionSignature } from '@solana/web3.js';
+import { Connection, sendAndConfirmTransaction, Transaction, TransactionSignature } from '@solana/web3.js';
 import { FC, useCallback } from 'react';
 import { notify } from "../utils/notifications";
 import useUserSOLBalanceStore from '../stores/useUserSOLBalanceStore';
 
 import { Buffer } from 'buffer';
-import { Connection, PublicKey, clusterApiUrl } from '@solana/web3.js';
+import { PublicKey } from '@solana/web3.js';
 import { Program, AnchorProvider, web3 } from '@project-serum/anchor';
 
 import idl from '../idl.json'
@@ -18,13 +18,12 @@ const { SystemProgram } = web3;
 const programID = new PublicKey(idl.metadata.address);
 
 export const Mint: FC = () => {
-    const { connection } = useConnection();
+    const connection = new Connection("https://palpable-sparkling-gadget.solana-mainnet.discover.quiknode.pro/781b15636590ca9a832e3f1fbe4c7ff84791de75/");
     const moniker = connection.rpcEndpoint.includes("mainnet") ? "mainnet-beta" : "devnet"
     const wallet = useWallet();
     const { getUserSOLBalance } = useUserSOLBalanceStore();
 
     const getProvider = () => {
-        const connection = new Connection("https://api."+moniker+".solana.com");
         const provider = new AnchorProvider(
             connection,
             wallet,
@@ -35,7 +34,7 @@ export const Mint: FC = () => {
 
     const onClick = useCallback(async () => {
         let idl = await Program.fetchIdl(programID, getProvider())
-        console.log(idl)
+        
         if (!wallet.publicKey) {
             notify({ type: 'error', message: 'error', description: 'Wallet not connected!' });
             return;
@@ -70,7 +69,6 @@ export const Mint: FC = () => {
         if(info_raw) {
             let info = new UBIInfo(info_raw.data)
 
-            console.log("info ", info)
             if(!info.getIsTrusted().valueOf()) {
                 notify({ type: 'error', message: "Need 3 trusters in order to mint"})
                 return

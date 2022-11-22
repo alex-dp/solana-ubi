@@ -13,6 +13,9 @@ import useUserSOLBalanceStore from '../../stores/useUserSOLBalanceStore';
 import { InitializeAccount } from 'components/InitializeAccount';
 import { Mint } from 'components/Mint';
 import { TrustUser } from 'components/TrustUser'
+import { CivicTrust } from 'components/CivicTrust';
+import { GatewayProvider } from '@civic/solana-gateway-react';
+import { PublicKey } from '@solana/web3.js';
 
 export const HomeView: FC = ({ }) => {
   const wallet = useWallet();
@@ -23,8 +26,7 @@ export const HomeView: FC = ({ }) => {
 
   useEffect(() => {
     if (wallet.publicKey) {
-      console.log(wallet.publicKey.toBase58())
-      getUserSOLBalance(wallet.publicKey, connection)
+      console.log(wallet.publicKey, " connected")
     }
   }, [wallet.publicKey, connection, getUserSOLBalance])
 
@@ -69,13 +71,17 @@ export const HomeView: FC = ({ }) => {
         </pre>
       </div>
       <div className="text-center">
-        <table className="buttons">
-            <tbody>
-              <tr><InitializeAccount /></tr>
-              <tr><Mint /></tr>
-              <tr><TrustUser /></tr>
-            </tbody>
-        </table>
+        <div className="buttons">
+        <GatewayProvider
+        wallet={wallet}
+        gatekeeperNetwork={new PublicKey("uniqobk8oGh4XBLMqM68K8M2zNu3CdYX7q5go7whQiv")}
+        clusterUrl={"https://palpable-sparkling-gadget.solana-mainnet.discover.quiknode.pro/781b15636590ca9a832e3f1fbe4c7ff84791de75/"} >
+          <InitializeAccount />
+          <Mint />
+          <TrustUser />
+          <CivicTrust/>
+          </GatewayProvider>
+        </div>
       </div>
     </div>
   </div>

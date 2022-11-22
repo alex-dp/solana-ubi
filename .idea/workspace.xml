@@ -7,10 +7,19 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b2f409a4-e2d3-4f6c-838e-0cd7f7797377" name="Changes" comment="">
+    <list default="true" id="b2f409a4-e2d3-4f6c-838e-0cd7f7797377" name="Changes" comment="readme update">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Anchor.toml" beforeDir="false" afterPath="$PROJECT_DIR$/Anchor.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cargo.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/components/InitializeAccount.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/components/InitializeAccount.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/components/Mint.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/components/Mint.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/components/TrustUser.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/components/TrustUser.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/contexts/ContextProvider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/contexts/ContextProvider.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/pages/_app.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/pages/_app.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/views/home/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/views/home/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/app/yarn.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/programs/solana-ubi/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/programs/solana-ubi/Cargo.toml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/programs/solana-ubi/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/programs/solana-ubi/src/lib.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -32,15 +41,15 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "last_opened_file_path": "/home/alex/Documenti/solana-ubi/programs/solana-ubi/Cargo.toml",
-    "org.rust.cargo.project.model.PROJECT_DISCOVERY": "true",
-    "settings.editor.selected.configurable": "preferences.pluginManager"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/alex/Documenti/solana-ubi/programs/solana-ubi/Cargo.toml&quot;,
+    &quot;org.rust.cargo.project.model.PROJECT_DISCOVERY&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
   }
-}]]></component>
+}</component>
   <component name="RustProjectSettings">
     <option name="toolchainHomeDirectory" value="$USER_HOME$/.cargo/bin" />
     <option name="version" value="2" />
@@ -54,6 +63,14 @@
       <option name="presentableId" value="Default" />
       <updated>1657875564261</updated>
     </task>
+    <task id="LOCAL-00001" summary="readme update">
+      <created>1668640632222</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1668640632222</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -66,5 +83,9 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="readme update" />
+    <option name="LAST_COMMIT_MESSAGE" value="readme update" />
   </component>
 </project>

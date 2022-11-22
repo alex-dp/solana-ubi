@@ -15,13 +15,11 @@ import { UBIInfo } from 'models/types';
 const programID = new PublicKey(idl.metadata.address);
 
 export const TrustUser: FC = () => {
-    const { connection } = useConnection();
+    const connection = new Connection("https://palpable-sparkling-gadget.solana-mainnet.discover.quiknode.pro/781b15636590ca9a832e3f1fbe4c7ff84791de75/");
     const wallet = useWallet();
     const { getUserSOLBalance } = useUserSOLBalanceStore();
 
     const getProvider = () => {
-        //Creating a provider, the provider is authenication connection to solana
-        const connection = new Connection("https://api.mainnet-beta.solana.com");
         const provider = new AnchorProvider(
             connection,
             wallet,
@@ -62,12 +60,9 @@ export const TrustUser: FC = () => {
                     if(trusteePKstr.toLowerCase().endsWith(".sol")){
                         try {
                             let pubkey = (await getDomainKey(trusteePKstr)).pubkey;
-                            console.log(pubkey.toString())
-                            trusteePK = (await NameRegistryState.retrieve(new Connection("https://api.mainnet-beta.solana.com"), pubkey)).registry.owner
-                            console.log(trusteePK.toString())
+                            trusteePK = (await NameRegistryState.retrieve(connection, pubkey)).registry.owner
                         } catch (e: any) {
                             notify({ type: 'error', message: "Unable to resolve Sol domain"});
-                            console.log(e.message)
                             return;
                         }
                     } else if (!PublicKey.isOnCurve(trusteePKstr)) {
@@ -106,7 +101,7 @@ export const TrustUser: FC = () => {
                             return;
                         }
                         else if(info.getLastTrustGiven() + 5*60 > new Date().getTime() / 1000) {
-                            notify({ type: 'erro', message: "You trusted someone too recently. Try again in 5 minutes"});
+                            notify({ type: 'error', message: "You trusted someone too recently. Try again in 5 minutes"});
                             return;
                         }
                     }

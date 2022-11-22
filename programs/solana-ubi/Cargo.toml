@@ -20,3 +20,4 @@ init-if-needed = ["anchor-derive-accounts/init-if-needed"]
 anchor-lang = "0.25.0"
 anchor-spl = "0.25.0"
 anchor-derive-accounts = {version = "0.25.0" }
+solana-gateway = "0.2.2"

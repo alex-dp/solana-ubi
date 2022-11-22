@@ -1,5 +1,5 @@
 import { WalletAdapterNetwork, WalletError } from '@solana/wallet-adapter-base';
-import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
+import { ConnectionProvider, useWallet, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletModalProvider as ReactUIWalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import {
     PhantomWalletAdapter,
@@ -10,7 +10,7 @@ import {
     // LedgerWalletAdapter,
     // SlopeWalletAdapter,
 } from '@solana/wallet-adapter-wallets';
-import { Cluster, clusterApiUrl } from '@solana/web3.js';
+import { Cluster, clusterApiUrl, PublicKey } from '@solana/web3.js';
 import { FC, ReactNode, useCallback, useMemo } from 'react';
 import { AutoConnectProvider, useAutoConnect } from './AutoConnectProvider';
 import { notify } from "../utils/notifications";
@@ -58,11 +58,15 @@ const WalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
 export const ContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
     return (
         <>
-            <NetworkConfigurationProvider>
-                <AutoConnectProvider>
-                    <WalletContextProvider>{children}</WalletContextProvider>
-                </AutoConnectProvider>
-            </NetworkConfigurationProvider>
+
+            
+                <NetworkConfigurationProvider>
+                    <AutoConnectProvider>
+                        <WalletContextProvider>
+                            {children}
+                        </WalletContextProvider>
+                    </AutoConnectProvider>
+                </NetworkConfigurationProvider>
         </>
     );
 };

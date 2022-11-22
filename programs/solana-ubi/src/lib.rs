@@ -1,11 +1,12 @@
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::program_option::COption;
 use anchor_spl::token::{self, Mint, MintTo, TokenAccount};
+use solana_gateway::Gateway;
 
 const MINTER: &str = "minter";
 const UBI_INFO: &str = "ubi_info7";
 const STATE: &str = "state1";
-const TRUST_COEFF: u8 = 1;
+const TRUST_COEFF: u8 = 8;
 const INITIAL_CAP: u128 = 20__000_000_000__000_000_000;
 const PRODUCTION: bool = true;
 
@@ -69,6 +70,22 @@ pub mod solana_ubi {
         Ok(0)
     }
 
+    pub fn civic_trust(ctx:Context<CivicTrust>, gatekeeper: Pubkey) -> Result<u8> {
+        let owner = &mut ctx.accounts.owner;
+        let gateway_token = &mut ctx.accounts.gateway_token;
+
+        let verified = Gateway::verify_gateway_token_account_info(
+            &gateway_token, &owner.key, &gatekeeper, None
+        ).is_ok();
+
+        if verified {
+            let info = &mut ctx.accounts.ubi_info;
+            info.is_trusted = true
+        }
+
+        Ok(0)
+    }
+
     pub fn initialize_account(ctx: Context<InitializeAccount>) -> Result<u8> {
         let now_ts: i64 = Clock::get().unwrap().unix_timestamp;
         let acc = &mut ctx.accounts.ubi_info;
@@ -92,14 +109,6 @@ pub mod solana_ubi {
                 ctx.accounts.platform_fee_account.to_account_info(),
             ],
         );
-
-        Ok(0)
-    }
-
-    pub fn initialize_mint(ctx: Context<InitializeMint>) -> Result<u8> {
-        let acc = &mut ctx.accounts.state;
-
-        acc.cap_left = INITIAL_CAP;
 
         Ok(0)
     }
@@ -169,6 +178,19 @@ pub struct TrustUser<'info> {
 }
 
 #[derive(Accounts)]
+pub struct CivicTrust<'info> {
+    /// CHECK:
+    #[account(
+        signer, mut,
+        constraint = *owner.key == ubi_info.authority
+    )]
+    pub owner: AccountInfo<'info>,
+    /// CHECK:
+    pub gateway_token: AccountInfo<'info>,
+    pub ubi_info: Account<'info, UBIInfo>
+}
+
+#[derive(Accounts)]
 pub struct InitializeAccount<'info> {
     #[account(
         init,
@@ -184,23 +206,6 @@ pub struct InitializeAccount<'info> {
     /// CHECK: x
     #[account(mut, constraint=platform_fee_account.key.to_string() == "DF9ni5SGuTy42UrfQ9X1RwcYQHZ1ZpCKUgG6fWjSLdiv")]
     pub platform_fee_account: AccountInfo<'info>,
-
-    pub system_program: Program<'info, System>,
-}
-
-#[derive(Accounts)]
-pub struct InitializeMint<'info> {
-    #[account(
-        init,
-        payer = user_authority,
-        space = 8 + State::MAX_SIZE,
-        seeds = [STATE.as_bytes()],
-        bump
-    )]
-    pub state: Account<'info, State>,
-    /// CHECK: x
-    #[account(signer, mut)]
-    pub user_authority: AccountInfo<'info>,
 
     pub system_program: Program<'info, System>,
 }

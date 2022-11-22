@@ -6,19 +6,22 @@ import { AppBar } from '../components/AppBar';
 import { ContentContainer } from '../components/ContentContainer';
 import { Footer } from '../components/Footer';
 import Notifications from '../components/Notification';
-
+import { useWallet } from '@solana/wallet-adapter-react';
 
 require('@solana/wallet-adapter-react-ui/styles.css');
 require('../styles/globals.css');
 
 const App: FC<AppProps> = ({ Component, pageProps }) => {
-    return (
-        <>
-          <Head>
-            <title>Solana Scaffold Lite</title>
-          </Head>
+  const wallet = useWallet()
+  return (
+      <>
+        <Head>
+          <title>Solana Scaffold Lite</title>
+        </Head>
+ 
 
-          <ContextProvider>
+        <ContextProvider>
+        
             <div className="flex flex-col h-screen bg-light-blue">
               <Notifications />
               <AppBar/>
@@ -27,9 +30,10 @@ const App: FC<AppProps> = ({ Component, pageProps }) => {
               </ContentContainer>
               <Footer/>
             </div>
-          </ContextProvider>
-        </>
-    );
+        </ContextProvider>
+
+      </>
+  );
 };
 
 export default App;

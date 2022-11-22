@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@bonfida/spl-name-service": "^0.1.50",
+    "@civic/solana-gateway-react": "^0.10.0",
     "@heroicons/react": "^1.0.5",
     "@project-serum/anchor": "^0.25.0",
     "@solana/spl-token": "^0.3.4",
