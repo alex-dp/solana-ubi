@@ -61,10 +61,10 @@ export const HomeView: FC = ({ }) => {
           <code className="truncate">Initialize your account </code>
         </pre>
         <pre data-prefix=">">
-          <code className="truncate">Use Discord to find people</code>
+          <code className="truncate">Get verified with civic pass</code>
         </pre>
         <pre data-prefix=">">
-          <code className="truncate">Ask them to trust your address</code>
+          <code className="truncate">Or ask 8 users to trust you</code>
         </pre>
         <pre data-prefix=">">
           <code className="truncate">Mint some NUBI every 24 hours</code>
