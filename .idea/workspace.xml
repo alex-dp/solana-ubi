@@ -7,21 +7,7 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b2f409a4-e2d3-4f6c-838e-0cd7f7797377" name="Changes" comment="readme update">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Cargo.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/components/InitializeAccount.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/components/InitializeAccount.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/components/Mint.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/components/Mint.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/components/TrustUser.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/components/TrustUser.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/contexts/ContextProvider.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/contexts/ContextProvider.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/pages/_app.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/pages/_app.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/views/home/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/views/home/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/yarn.lock" beforeDir="false" afterPath="$PROJECT_DIR$/app/yarn.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/programs/solana-ubi/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/programs/solana-ubi/Cargo.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/programs/solana-ubi/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/programs/solana-ubi/src/lib.rs" afterDir="false" />
-    </list>
+    <list default="true" id="b2f409a4-e2d3-4f6c-838e-0cd7f7797377" name="Changes" comment="readme update" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

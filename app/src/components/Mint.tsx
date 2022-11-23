@@ -70,7 +70,7 @@ export const Mint: FC = () => {
             let info = new UBIInfo(info_raw.data)
 
             if(!info.getIsTrusted().valueOf()) {
-                notify({ type: 'error', message: "Need 3 trusters in order to mint"})
+                notify({ type: 'error', message: "Need 8 trusters or civic pass in order to mint"})
                 return
             } else if(new Date().getTime() / 1000 < info.getLastIssuance() + 24*3600) {
                 notify({ type: 'error', message: "You minted NUBI less than 24 hours ago"})
