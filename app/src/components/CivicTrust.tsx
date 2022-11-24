@@ -33,28 +33,27 @@ export const CivicTrust: FC = () => {
     const provider = getProvider()
 
     const onClick = useCallback(async () => {
-        console.log("status", gatewayStatus)
-        console.log("token", gatewayToken)
-        if (gatewayToken && gatewayToken.state == "ACTIVE") {
-            let info = PublicKey.findProgramAddressSync(
-                [Buffer.from("ubi_info7"), wallet.publicKey.toBytes()],
-                programID
-            )
+        
+        let info = PublicKey.findProgramAddressSync(
+            [Buffer.from("ubi_info7"), wallet.publicKey.toBytes()],
+            programID
+        )
 
-            let trustee_info_raw = await connection.getAccountInfo(info[0]) 
+        let trustee_info_raw = await connection.getAccountInfo(info[0]) 
 
-            if(!trustee_info_raw) {
-                notify({ type: 'error', message: "You must initialize your account before verifying"});
+        if(!trustee_info_raw) {
+            notify({ type: 'error', message: "You must initialize your account before verifying"});
+            return;
+        } else {
+            let infoO = new UBIInfo(trustee_info_raw.data)
+
+            if (infoO.getIsTrusted().valueOf()) {
+                notify({ type: 'info', message: "You're already verified"});
                 return;
-            } else {
-                let infoO = new UBIInfo(trustee_info_raw.data)
-
-                if (infoO.getIsTrusted().valueOf()) {
-                    notify({ type: 'info', message: "You're already verified"});
-                    return;
-                }
             }
+        }
 
+        if (gatewayToken && gatewayToken.state == "ACTIVE") {
             try {
                 let idl = await Program.fetchIdl(programID, provider)
 
