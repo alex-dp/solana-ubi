@@ -35,7 +35,7 @@ export const AppBar: FC = props => {
                     <input type="checkbox" checked={autoConnect} onChange={(e) => setAutoConnect(e.target.checked)} className="toggle" />
                   </label>
 
-                  <NetworkSwitcher />
+                  {/* <NetworkSwitcher /> */}
                 </div>
               </li>
             </ul>

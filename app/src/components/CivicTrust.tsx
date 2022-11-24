@@ -32,8 +32,37 @@ export const CivicTrust: FC = () => {
 
     const provider = getProvider()
 
+    async function verify(info) {
+        try {
+            let idl = await Program.fetchIdl(programID, provider)
+
+            const program = new Program(idl, programID, provider)
+            
+            let transaction = new Transaction();
+            transaction.add(
+                await program.methods.civicTrust(gatewayToken.gatekeeperNetworkAddress).accounts({
+                    owner: wallet.publicKey,
+                    gatewayToken: gatewayToken.publicKey,
+                    ubiInfo: info[0]
+                }).instruction()
+            );
+
+            let signature = await wallet.sendTransaction(transaction, connection);
+
+            const latestBlockHash = await connection.getLatestBlockhash();
+
+            await connection.confirmTransaction({
+                blockhash: latestBlockHash.blockhash,
+                lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
+                signature: signature,
+            });
+        } finally {
+            notify({type: "success", message: "You are now verified"})
+        }
+    }
+
     const onClick = useCallback(async () => {
-        
+
         let info = PublicKey.findProgramAddressSync(
             [Buffer.from("ubi_info7"), wallet.publicKey.toBytes()],
             programID
@@ -54,32 +83,7 @@ export const CivicTrust: FC = () => {
         }
 
         if (gatewayToken && gatewayToken.state == "ACTIVE") {
-            try {
-                let idl = await Program.fetchIdl(programID, provider)
-
-                const program = new Program(idl, programID, provider)
-                
-                let transaction = new Transaction();
-                transaction.add(
-                    await program.methods.civicTrust(gatewayToken.gatekeeperNetworkAddress).accounts({
-                        owner: wallet.publicKey,
-                        gatewayToken: gatewayToken.publicKey,
-                        ubiInfo: info[0]
-                    }).instruction()
-                );
-
-                let signature = await wallet.sendTransaction(transaction, connection);
-
-                const latestBlockHash = await connection.getLatestBlockhash();
-
-                await connection.confirmTransaction({
-                    blockhash: latestBlockHash.blockhash,
-                    lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
-                    signature: signature,
-                });
-            } finally {
-                notify({type: "success", message: "You are now verified"})
-            }
+            verify(info)
         } else {
             requestGatewayToken()
         }
