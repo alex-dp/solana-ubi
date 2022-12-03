@@ -75,7 +75,7 @@ export const Mint: FC = () => {
             } else if(new Date().getTime() / 1000 < info.getLastIssuance() + 24*3600) {
                 notify({ type: 'error', message: "You minted NUBI less than 24 hours ago"})
                 return
-            } else if(info.getIsTrusted()) {
+            } else {
                 try {
 
                     const program = new Program(idl, programID, provider)
@@ -110,8 +110,6 @@ export const Mint: FC = () => {
                 } catch (error) {
                     notify({ type: 'error', message: `Transaction failed!`, description: error?.message, txid: signature });
                 }
-            } else {
-                notify({ type: 'error', message: "You must have 3 people trust your address before you can mint"})
             }
         } else {
             notify({ type: 'error', message: "Please initialize your account"})
