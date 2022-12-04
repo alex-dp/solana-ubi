@@ -14,25 +14,25 @@ require('../styles/globals.css');
 const App: FC<AppProps> = ({ Component, pageProps }) => {
   const wallet = useWallet()
   return (
-      <>
-        <Head>
-          <title>Solana Scaffold Lite</title>
-        </Head>
- 
+    <>
+      <Head>
+        <title>Solana Scaffold Lite</title>
+      </Head>
 
-        <ContextProvider>
-        
-            <div className="flex flex-col h-screen bg-light-blue">
-              <Notifications />
-              <AppBar/>
-              <ContentContainer>
-                <Component {...pageProps} />
-              </ContentContainer>
-              <Footer/>
-            </div>
-        </ContextProvider>
 
-      </>
+      <ContextProvider>
+
+        <div className="flex flex-col h-screen bg-light-blue">
+          <Notifications />
+          <AppBar />
+          <ContentContainer>
+            <Component {...pageProps} />
+          </ContentContainer>
+          <Footer />
+        </div>
+      </ContextProvider>
+
+    </>
   );
 };
 

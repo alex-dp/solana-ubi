@@ -10,7 +10,6 @@ import { Program, AnchorProvider } from '@project-serum/anchor';
 import idl from '../idl.json'
 import { UBIInfo } from 'models/types';
 import { GatewayProvider, useGateway } from '@civic/solana-gateway-react';
-import { type } from 'os';
 
 const programID = new PublicKey(idl.metadata.address);
 
@@ -37,7 +36,7 @@ export const CivicTrust: FC = () => {
             let idl = await Program.fetchIdl(programID, provider)
 
             const program = new Program(idl, programID, provider)
-            
+
             let transaction = new Transaction();
             transaction.add(
                 await program.methods.civicTrust(gatewayToken.gatekeeperNetworkAddress).accounts({
@@ -57,7 +56,7 @@ export const CivicTrust: FC = () => {
                 signature: signature,
             });
         } finally {
-            notify({type: "success", message: "You are now verified"})
+            notify({ type: "success", message: "You are now verified" })
         }
     }
 
@@ -68,16 +67,21 @@ export const CivicTrust: FC = () => {
             programID
         )
 
-        let trustee_info_raw = await connection.getAccountInfo(info[0]) 
+        let trustee_info_raw = await connection.getAccountInfo(info[0])
 
-        if(!trustee_info_raw) {
-            notify({ type: 'error', message: "You must initialize your account before verifying"});
+        if (!trustee_info_raw) {
+            notify({ type: 'error', message: "You must initialize your account before verifying" });
             return;
         } else {
             let infoO = new UBIInfo(trustee_info_raw.data)
 
+            console.log(infoO)
+            console.log(gatewayToken)
+            console.log(gatewayStatus)
+
             if (infoO.getIsTrusted().valueOf()) {
-                notify({ type: 'info', message: "You're already verified"});
+                notify({ type: 'info', message: "You're already verified" });
+                requestGatewayToken()
                 return;
             }
         }
@@ -90,20 +94,11 @@ export const CivicTrust: FC = () => {
     }, [wallet.publicKey, connection, getUserSOLBalance]);
 
     return (
-        <GatewayProvider
-              wallet={wallet}
-              gatekeeperNetwork={new PublicKey("uniqobk8oGh4XBLMqM68K8M2zNu3CdYX7q5go7whQiv")}
-              clusterUrl={"https://palpable-sparkling-gadget.solana-mainnet.discover.quiknode.pro/781b15636590ca9a832e3f1fbe4c7ff84791de75/"}
-              cluster={moniker}>
-            <div>
-                <button
-                    className="px-8 m-2 btn bg-[#ff6b4e] max-width-200 width-20..."
-                    onClick={onClick}
-                >
-                    <span>Get verified with civic</span>
-                </button>
-            </div>
-        </GatewayProvider>
+        <button
+            className="px-8 m-2 btn bg-[#ff6b4e] max-width-200 width-20..."
+            onClick={onClick}>
+            <span>Get verified with civic</span>
+        </button>
     );
 };
 

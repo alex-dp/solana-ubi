@@ -186,6 +186,9 @@ pub struct CivicTrust<'info> {
     )]
     pub owner: AccountInfo<'info>,
     /// CHECK:
+    #[account(
+        constraint = gateway_token.key.to_string() == "uniqobk8oGh4XBLMqM68K8M2zNu3CdYX7q5go7whQiv"
+    )]
     pub gateway_token: AccountInfo<'info>,
     pub ubi_info: Account<'info, UBIInfo>
 }

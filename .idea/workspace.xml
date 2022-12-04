@@ -7,7 +7,15 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b2f409a4-e2d3-4f6c-838e-0cd7f7797377" name="Changes" comment="readme update" />
+    <list default="true" id="b2f409a4-e2d3-4f6c-838e-0cd7f7797377" name="Changes" comment="minor">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/components/CivicTrust.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/components/CivicTrust.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/components/Mint.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/components/Mint.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/pages/_app.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/pages/_app.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/styles/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/styles/globals.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/views/home/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/views/home/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/programs/solana-ubi/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/programs/solana-ubi/src/lib.rs" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -31,7 +39,7 @@
   &quot;keyToString&quot;: {
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/alex/Documenti/solana-ubi/programs/solana-ubi/Cargo.toml&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/alex/cw-contracts/contracts/cw20-pot&quot;,
     &quot;org.rust.cargo.project.model.PROJECT_DISCOVERY&quot;: &quot;true&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
   }
@@ -56,7 +64,14 @@
       <option name="project" value="LOCAL" />
       <updated>1668640632222</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="minor">
+      <created>1670028617543</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1670028617543</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -72,6 +87,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="readme update" />
-    <option name="LAST_COMMIT_MESSAGE" value="readme update" />
+    <MESSAGE value="minor" />
+    <option name="LAST_COMMIT_MESSAGE" value="minor" />
   </component>
 </project>
