@@ -75,13 +75,8 @@ export const CivicTrust: FC = () => {
         } else {
             let infoO = new UBIInfo(trustee_info_raw.data)
 
-            console.log(infoO)
-            console.log(gatewayToken)
-            console.log(gatewayStatus)
-
             if (infoO.getIsTrusted().valueOf()) {
                 notify({ type: 'info', message: "You're already verified" });
-                requestGatewayToken()
                 return;
             }
         }
