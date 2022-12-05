@@ -5,19 +5,19 @@
 
  - Anyone is allowed to request to participate
  - An account will be made for them
- - They have three (or more as the network expands) people who already receive the UBI trust their UBI account
- - [IMPLEMENTING] they use their civic pass to get trusted
+ - They have eight people who already receive the UBI trust their UBI account
+ - Alternatively, they use their civic pass to get trusted
  - If their account is trusted, they can mint 9-decimal tokens at a (variable?) rate to their token account
  - They can also trust new users
 
  ### progress/deployments
 
  The program is deployed on mainnet. find frontend app here https://nuclear-ubi.com
-  - connect your wallet
-  - make sure you're on mainnet and have SOL
-  - initialize your account
-  - get trusted
-  - mint your token
-  - check your token holdings
-  - go back to the app 24 hours later to mint again
-  - there are a serum market and a raydium pool (NUBI-SOL)
+  - Connect your wallet
+  - Make sure you have SOL
+  - Initialize your account
+  - Get verified
+  - Mint your token
+  - Check your token holdings
+  - Go back to the app 24 hours later to mint again
+  - There are a serum market and a raydium pool (NUBI-SOL)
