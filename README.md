@@ -1,7 +1,7 @@
-# SolUBI
-## A universal basic income system on Solana
+## Nuclear UBI
+### A universal basic income system on Solana
 
-### function
+#### function
 
  - Anyone is allowed to request to participate
  - An account will be made for them
@@ -10,7 +10,7 @@
  - If their account is trusted, they can mint 9-decimal tokens at a (variable?) rate to their token account
  - They can also trust new users
 
- ### progress/deployments
+#### progress/deployments
 
  The program is deployed on mainnet. find frontend app here https://nuclear-ubi.com
   - Connect your wallet
