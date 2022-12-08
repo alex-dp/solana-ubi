@@ -14,7 +14,7 @@ import {
     getAssociatedTokenAddress,
     TokenAccountNotFoundError,
     TokenInvalidAccountOwnerError,
-  } from "@solana/spl-token";
+} from "@solana/spl-token";
 
 import idl from '../idl.json'
 import { getMint } from 'models/types';
@@ -43,7 +43,7 @@ export const InitializeAccount: FC = () => {
         const idl = await Program.fetchIdl(programID, getProvider())
 
         if (!wallet.publicKey) {
-            notify({ type: 'error', message: 'error', description: 'Wallet not connected!' });
+            notify({ type: 'error', message: 'Please connect your wallet' });
             return;
         }
 
@@ -65,7 +65,7 @@ export const InitializeAccount: FC = () => {
         let txs: Transaction[] = []
         let latest = await connection.getLatestBlockhash()
 
-        if(!info_raw) {
+        if (!info_raw) {
             try {
 
                 const program = new Program(idl, programID, getProvider())
@@ -95,14 +95,14 @@ export const InitializeAccount: FC = () => {
             a = await getAccount(connection, ata);
         } catch (error: unknown) {
             if (error instanceof TokenAccountNotFoundError || error instanceof TokenInvalidAccountOwnerError) {
-                try {                
+                try {
                     let tx = new Transaction();
                     tx.add(
                         createAssociatedTokenAccountInstruction(
-                        wallet.publicKey, // payer
-                        ata, // ata
-                        wallet.publicKey, // owner
-                        new PublicKey(getMint(moniker)) // mint
+                            wallet.publicKey, // payer
+                            ata, // ata
+                            wallet.publicKey, // owner
+                            new PublicKey(getMint(moniker)) // mint
                         )
                     );
                     tx.recentBlockhash = latest.blockhash;
@@ -119,8 +119,8 @@ export const InitializeAccount: FC = () => {
             }
         }
 
-        if(txs.length != 0) {
-            notify({ type: 'info', message: 'Sign ' + txs.length + " transaction" + (txs.length != 1 ? "s":'') });
+        if (txs.length != 0) {
+            notify({ type: 'info', message: 'Sign ' + txs.length + " transaction" + (txs.length != 1 ? "s" : '') });
             try {
                 let signedTxs = await wallet.signAllTransactions(txs)
                 signedTxs.forEach(element => {
@@ -130,7 +130,7 @@ export const InitializeAccount: FC = () => {
             } catch (error) {
                 notify({ type: 'error', message: error?.message });
             }
-            
+
         }
 
     }, [wallet.publicKey, connection, getUserSOLBalance]);
@@ -138,7 +138,7 @@ export const InitializeAccount: FC = () => {
     return (
         <div>
             <button
-                className="px-8 m-2 btn bg-gradient-to-r from-[#c53fe9ff] to-[#e4d33aff] hover:from-[#131825] hover:to-[#131825] max-width-200 width-20..."
+                className="px-8 m-2 btn bg-gradient-to-r from-[#c53fe9ff] to-[#e4d33aff] hover:from-[#303030] hover:to-[#303030] max-width-200 width-20..."
                 onClick={onClick}
             >
                 <span>initialize</span>

@@ -36,10 +36,9 @@ export const Mint: FC = () => {
         let idl = await Program.fetchIdl(programID, getProvider())
 
         if (!wallet.publicKey) {
-            notify({ type: 'error', message: 'error', description: 'Wallet not connected!' });
+            notify({ type: 'error', message: 'Please connect your wallet' });
             return;
         }
-
 
         let pda = PublicKey.findProgramAddressSync(
             [Buffer.from("ubi_info7"), wallet.publicKey.toBytes()],
@@ -120,7 +119,7 @@ export const Mint: FC = () => {
     return (
         <div>
             <button
-                className="px-8 m-2 btn bg-gradient-to-r from-[#c53fe9ff] to-[#e4d33aff] hover:from-[#131825] hover:to-[#131825] max-width-200 width-20 ..."
+                className="px-8 m-2 btn bg-gradient-to-r from-[#c53fe9ff] to-[#e4d33aff] hover:from-[#303030] hover:to-[#303030] max-width-200 width-20 ..."
                 onClick={onClick}
             >
                 <span>mint</span>

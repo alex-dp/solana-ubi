@@ -31,7 +31,7 @@ export const TrustUser: FC = () => {
     const onClick = useCallback(async () => {
         const idl = await Program.fetchIdl(programID, getProvider())
         if (!wallet.publicKey) {
-            notify({ type: 'error', message: 'error', description: 'Wallet not connected!' });
+            notify({ type: 'error', message: 'Please connect your wallet' });
             return;
         }
 
@@ -45,35 +45,35 @@ export const TrustUser: FC = () => {
         )
 
         let info_raw = await connection.getAccountInfo(pda[0])
-        if(info_raw) {
+        if (info_raw) {
             let info = new UBIInfo(info_raw.data)
-            if(info.getIsTrusted()) {
+            if (info.getIsTrusted()) {
                 try {
                     provider = getProvider() //checks & verify the dapp it can able to connect solana network
-        
+
                     const program = new Program(idl, programID, provider) //program will communicate to solana network via rpc using lib.json as model
-        
+
                     let transaction = new Transaction();
                     let trusteePKstr = prompt("Paste public key or SOL domain of user you wish to trust")
                     if (!trusteePKstr) return
-                    let trusteePK : PublicKey = null
-                    if(trusteePKstr.toLowerCase().endsWith(".sol")){
+                    let trusteePK: PublicKey = null
+                    if (trusteePKstr.toLowerCase().endsWith(".sol")) {
                         try {
                             let pubkey = (await getDomainKey(trusteePKstr)).pubkey;
                             trusteePK = (await NameRegistryState.retrieve(connection, pubkey)).registry.owner
                         } catch (e: any) {
-                            notify({ type: 'error', message: "Unable to resolve Sol domain"});
+                            notify({ type: 'error', message: "Unable to resolve Sol domain" });
                             return;
                         }
                     } else if (!PublicKey.isOnCurve(trusteePKstr)) {
-                        notify({ type: 'error', message: "Invalid public key!"});
+                        notify({ type: 'error', message: "Invalid public key!" });
                         return;
                     } else {
                         trusteePK = new PublicKey(trusteePKstr);
                     }
 
                     if (trusteePK.toString() == wallet.publicKey.toString()) {
-                        notify({ type: 'error', message: "You may not trust yourself"});
+                        notify({ type: 'error', message: "You may not trust yourself" });
                         return;
                     }
 
@@ -81,31 +81,31 @@ export const TrustUser: FC = () => {
                         [Buffer.from("ubi_info7"), trusteePK.toBytes()],
                         programID
                     )
-            
+
                     let trustee_info_raw = await connection.getAccountInfo(trusteePda[0])
 
-                    
 
-                    if(!trustee_info_raw) {
-                        notify({ type: 'error', message: "You are trying to trust an account which hasn't been initialized"});
+
+                    if (!trustee_info_raw) {
+                        notify({ type: 'error', message: "You are trying to trust an account which hasn't been initialized" });
                         return;
                     } else {
                         let tee_info = new UBIInfo(trustee_info_raw.data)
 
                         if (tee_info.getIsTrusted().valueOf()) {
-                            notify({ type: 'info', message: "This account already has trust"});
+                            notify({ type: 'info', message: "This account already has trust" });
                             return;
                         }
-                        else if(tee_info.hasTruster(wallet.publicKey.toBytes()).valueOf()) {
-                            notify({ type: 'info', message: "You can only trust someone once"});
+                        else if (tee_info.hasTruster(wallet.publicKey.toBytes()).valueOf()) {
+                            notify({ type: 'info', message: "You can only trust someone once" });
                             return;
                         }
-                        else if(info.getLastTrustGiven() + 5*60 > new Date().getTime() / 1000) {
-                            notify({ type: 'error', message: "You trusted someone too recently. Try again in 5 minutes"});
+                        else if (info.getLastTrustGiven() + 5 * 60 > new Date().getTime() / 1000) {
+                            notify({ type: 'error', message: "You trusted someone too recently. Try again in 5 minutes" });
                             return;
                         }
                     }
-        
+
                     transaction.add(
                         await program.methods.trust().accounts({
                             trusteeUbiInfo: trusteePda[0],
@@ -113,11 +113,11 @@ export const TrustUser: FC = () => {
                             trusterAuthority: wallet.publicKey
                         }).instruction()
                     );
-        
+
                     signature = await wallet.sendTransaction(transaction, connection);
-        
+
                     const latestBlockHash = await connection.getLatestBlockhash();
-        
+
                     await connection.confirmTransaction({
                         blockhash: latestBlockHash.blockhash,
                         lastValidBlockHeight: latestBlockHash.lastValidBlockHeight,
@@ -128,10 +128,10 @@ export const TrustUser: FC = () => {
                     notify({ type: 'error', message: `Transaction failed!`, description: error?.message, txid: signature });
                 }
             } else {
-                notify({ type: 'error', message: "You must be trusted in order to trust someone"})
+                notify({ type: 'error', message: "You must be trusted in order to trust someone" })
             }
         } else {
-            notify({ type: 'error', message: "Please initialize your account"})
+            notify({ type: 'error', message: "Please initialize your account" })
         }
 
     }, [wallet.publicKey, connection, getUserSOLBalance]);
@@ -139,7 +139,7 @@ export const TrustUser: FC = () => {
     return (
         <div>
             <button
-                className="px-8 m-2 btn bg-gradient-to-r from-[#c53fe9ff] to-[#e4d33aff] hover:from-[#131825] hover:to-[#131825] max-width-200 width-20 ..."
+                className="px-8 m-2 btn bg-gradient-to-r from-[#c53fe9ff] to-[#e4d33aff] hover:from-[#303030] hover:to-[#303030] max-width-200 width-20 ..."
                 onClick={onClick}
             >
                 <span>Trust a new user</span>

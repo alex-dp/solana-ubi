@@ -9,12 +9,6 @@
   <component name="ChangeListManager">
     <list default="true" id="b2f409a4-e2d3-4f6c-838e-0cd7f7797377" name="Changes" comment="minor">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/components/CivicTrust.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/components/CivicTrust.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/components/Mint.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/components/Mint.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/pages/_app.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/pages/_app.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/styles/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/styles/globals.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/views/home/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/views/home/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/programs/solana-ubi/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/programs/solana-ubi/src/lib.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

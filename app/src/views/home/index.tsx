@@ -16,6 +16,7 @@ import { TrustUser } from 'components/TrustUser'
 import { CivicTrust } from 'components/CivicTrust';
 import { GatewayProvider } from '@civic/solana-gateway-react';
 import { PublicKey } from '@solana/web3.js';
+import { Swap } from 'components/Swap';
 
 export const HomeView: FC = ({ }) => {
   const wallet = useWallet();
@@ -52,7 +53,7 @@ export const HomeView: FC = ({ }) => {
           <code className="truncate">Initialize your account </code>
         </pre>
         <pre data-prefix=">">
-          <code className="truncate">Get verified with civic pass</code>
+          <code className="truncate">Get verified with Civic pass</code>
         </pre>
         <pre data-prefix=">">
           <code className="truncate">Or ask 8 users to trust you</code>
@@ -72,6 +73,7 @@ export const HomeView: FC = ({ }) => {
           <Mint />
           <TrustUser />
           <CivicTrust />
+          <Swap />
         </GatewayProvider>
       </div>
     </div>

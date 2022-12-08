@@ -28,7 +28,7 @@ a {
   width: 100%;
   table-layout: fixed;
   border-collapse: collapse;
-  background-color: rgba(0, 0, 0, 0);
+  background-color: transparent;
 }
 
 .buttons:disabled {
@@ -49,6 +49,11 @@ a {
 
 .buttons button {
   width: 100%;
+  transition: 0.18s;
+}
+
+.btn:hover {
+  background-color: #303030;
 }
 
 .max-width-200 {
@@ -114,4 +119,12 @@ a {
 /* this makes civic popup display correctly. ffs. */
 [data-testid="WRAPPER_CONTAINER"] div div {
   flex: initial;
+}
+
+.btn-img-text {
+  height: 20px;
+}
+
+.btn-img-text-large {
+  height: 30px;
 }
