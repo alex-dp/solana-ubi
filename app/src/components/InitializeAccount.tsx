@@ -120,7 +120,6 @@ export const InitializeAccount: FC = () => {
         }
 
         if (txs.length != 0) {
-            notify({ type: 'info', message: 'Sign ' + txs.length + " transaction" + (txs.length != 1 ? "s" : '') });
             try {
                 let signedTxs = await wallet.signAllTransactions(txs)
                 signedTxs.forEach(element => {
@@ -136,14 +135,12 @@ export const InitializeAccount: FC = () => {
     }, [wallet.publicKey, connection, getUserSOLBalance]);
 
     return (
-        <div>
-            <button
-                className="px-8 m-2 btn bg-gradient-to-r from-[#c53fe9ff] to-[#e4d33aff] hover:from-[#303030] hover:to-[#303030] max-width-200 width-20..."
-                onClick={onClick}
-            >
-                <span>initialize</span>
-            </button>
-        </div>
+        <button
+            className="px-8 m-2 btn bg-gradient-to-r from-[#c53fe9ff] to-[#e4d33aff] hover:from-[#303030] hover:to-[#303030] max-width-200 width-20..."
+            onClick={onClick}
+        >
+            <span>initialize</span>
+        </button>
     );
 };
 

@@ -137,14 +137,12 @@ export const TrustUser: FC = () => {
     }, [wallet.publicKey, connection, getUserSOLBalance]);
 
     return (
-        <div>
-            <button
-                className="px-8 m-2 btn bg-gradient-to-r from-[#c53fe9ff] to-[#e4d33aff] hover:from-[#303030] hover:to-[#303030] max-width-200 width-20 ..."
-                onClick={onClick}
-            >
-                <span>Trust a new user</span>
-            </button>
-        </div>
+        <button
+            className="px-8 m-2 btn bg-gradient-to-r from-[#c53fe9ff] to-[#e4d33aff] hover:from-[#303030] hover:to-[#303030] max-width-200 width-20 ..."
+            onClick={onClick}
+        >
+            <span>Trust a new user</span>
+        </button>
     );
 };
 
